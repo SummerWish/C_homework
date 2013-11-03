@@ -1,0 +1,13 @@
+(x86)
+
+int         4Byte/32    -2^31 ~ 2^31-1
+unsigned int            0 ~ 2^32-1
+
+short       2Byte/16    -2^15 ~ 2^15-1
+unsigned short          0 ~ 2^16-1
+
+long        4Byte/32    -2^31 ~ 2^31-1
+unsigned long           0 ~ 2^32-1
+
+long long   8Byte/64    -2^63 ~ 2^63-1
+unsigned long long      0 ~ 2^64-1
