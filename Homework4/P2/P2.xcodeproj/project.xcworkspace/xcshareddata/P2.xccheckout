@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>E7B495D8-1B68-43E7-8404-2330BFA7F67C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>P2</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0F260E7A-54A4-4763-93D2-9F45C676E354</key>
+		<string>https://github.com/breeswish/C_homework.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Homework4/P2/P2.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0F260E7A-54A4-4763-93D2-9F45C676E354</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/breeswish/C_homework.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0F260E7A-54A4-4763-93D2-9F45C676E354</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0F260E7A-54A4-4763-93D2-9F45C676E354</string>
+			<key>IDESourceControlWCCName</key>
+			<string>C_homework</string>
+		</dict>
+	</array>
+</dict>
+</plist>
