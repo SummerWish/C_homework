@@ -53,8 +53,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
         
         // 暂时只支持双引号包裹的字符串
         // 对于字符串特殊处理
-        if (in_string && ch != '\"' && ch != '\\' && ch != '\0')
-        {
+        if (in_string && ch != '\"' && ch != '\\' && ch != '\0') {
             if (in_escape) {
                 // \a，\b，\c等处理为a，b，c
                 // 只需要撤销转义标记

@@ -40,10 +40,10 @@ public:
         auto col = row.cols[statement.rowIndex];
         
         if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
+            
             MyString _v = statement.value;
             
-            switch (statement.op)
-            {
+            switch (statement.op) {
                 case SQLConstants::WHERE_STATEMENT_EQUAL:
                     return col._v_s == _v;
                 case SQLConstants::WHERE_STATEMENT_GT:
@@ -61,10 +61,10 @@ public:
             }
             
         } else {
+            
             float _v = statement.value.toFloat();
             
-            switch (statement.op)
-            {
+            switch (statement.op) {
                 case SQLConstants::WHERE_STATEMENT_EQUAL:
                     return col._v_f == _v;
                 case SQLConstants::WHERE_STATEMENT_GT:

@@ -68,8 +68,7 @@ void SQLQueryObject::_print() const
     std::cout << std::left;
     
     {
-        if (_int.size() > 0)
-        {
+        if (_int.size() > 0) {
             for (auto it = _int.begin(); it != _int.end(); ++it) {
                 if (it->first == SQLConstants::TOKEN_TOP_VALUE) {
                     std::cout << std::setw(20) << c._constToString(it->first) << it->second << std::endl;
@@ -81,8 +80,7 @@ void SQLQueryObject::_print() const
     }
     
     {
-        if (_str.size() > 0)
-        {
+        if (_str.size() > 0) {
             for (auto it = _str.begin(); it != _str.end(); ++it) {
                 std::cout << std::setw(20) << c._constToString(it->first) << it->second << std::endl;
             }
@@ -90,8 +88,7 @@ void SQLQueryObject::_print() const
     }
     
     {
-        if (_select_columns.size() > 0)
-        {
+        if (_select_columns.size() > 0) {
             std::cout << ">> Selected columns:" << std::endl;
             
             std::cout << std::left;
@@ -104,8 +101,7 @@ void SQLQueryObject::_print() const
     }
     
     {
-        if (_where_statements.size() > 0)
-        {
+        if (_where_statements.size() > 0) {
             std::cout << ">> Condition:" << std::endl;
             
             for (int i = 0; i < _where_statements.size(); ++i) {
@@ -124,8 +120,7 @@ void SQLQueryObject::_print() const
     }
     
     {
-        if (_create_table_columns.size() > 0)
-        {
+        if (_create_table_columns.size() > 0) {
             std::cout << ">> Create columns:" << std::endl;
             
             std::cout << std::left;
@@ -143,8 +138,7 @@ void SQLQueryObject::_print() const
 
 bool SQLQueryObject::checkCondition(const SQLTable& table) const
 {
-    for (int i = 0; i < _where_statements.size(); ++i)
-    {
+    for (int i = 0; i < _where_statements.size(); ++i) {
         if (_where_statements[i].type != SQLConstants::WHERE_COMPONENT_STATEMENT) {
             if (table._colIndex.find(_where_statements[i].statement.name.toUpper()) == table._colIndex.end()) {
                 return false;
@@ -206,36 +200,27 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     for (auto it = infix.begin(); it != infix.end(); ++it) {
         auto p = (*it);
         
-        if (isOperator(p))
-        {
-            while (!operator_stack.empty() && isOperator(operator_stack.top()) && getPriority(operator_stack.top()) >= getPriority(p))
-            {
+        if (isOperator(p)) {
+            while (!operator_stack.empty() && isOperator(operator_stack.top()) && getPriority(operator_stack.top()) >= getPriority(p)) {
                 postfix.push_back(operator_stack.top());
                 operator_stack.pop();
             }
             operator_stack.push(p);
-        }
-        else if (p.type == SQLConstants::WHERE_COMPONENT_BEGIN)
-        {
+        } else if (p.type == SQLConstants::WHERE_COMPONENT_BEGIN) {
             operator_stack.push(p);
-        }
-        else if (p.type == SQLConstants::WHERE_COMPONENT_END)
-        {
+        } else if (p.type == SQLConstants::WHERE_COMPONENT_END) {
             while (operator_stack.top().type != SQLConstants::WHERE_COMPONENT_BEGIN)
             {
                 postfix.push_back(operator_stack.top());
                 operator_stack.pop();
             }
             operator_stack.pop();
-        }
-        else
-        {
+        } else {
             postfix.push_back(p);
         }
     }
     
-    while (!operator_stack.empty())
-    {
+    while (!operator_stack.empty()) {
         postfix.push_back(operator_stack.top());
         operator_stack.pop();
     }
@@ -256,8 +241,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
         return false;
     }
     
-    for (int i = 0; i < _select_columns.size(); ++i)
-    {
+    for (int i = 0; i < _select_columns.size(); ++i) {
         if (_select_columns[i] == "*") {
             has_wildcard = true;
             break;
@@ -272,8 +256,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
         return true;
     }
     
-    for (int i = 0; i < _select_columns.size(); ++i)
-    {
+    for (int i = 0; i < _select_columns.size(); ++i) {
         if (table._colIndex.find(_select_columns[i].toUpper()) == table._colIndex.end()) {
             return false;
         }
@@ -297,8 +280,7 @@ CompiledSQLFilterObject& SQLQueryObject::compileFilter(const SQLTable& table) co
     
     ret->wild = false;
     
-    for (int i = 0; i < _select_columns.size(); ++i)
-    {
+    for (int i = 0; i < _select_columns.size(); ++i) {
         filter.insert(table._colIndex.find(_select_columns[i].toUpper())->second);
     }
     

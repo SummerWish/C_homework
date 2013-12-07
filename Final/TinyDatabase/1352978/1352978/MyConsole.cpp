@@ -31,8 +31,7 @@ void MyConsole::hello()
  */
 int MyConsole::help()
 {
-    for (int i = 0; i < _desc.size(); ++i)
-    {
+    for (int i = 0; i < _desc.size(); ++i) {
         std::cout << std::left;
         std::cout << std::setw(8) << _desc[i].flag;
         std::cout << std::setw(15) << _desc[i].params;

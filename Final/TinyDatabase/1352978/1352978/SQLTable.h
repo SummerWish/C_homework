@@ -48,8 +48,7 @@ public:
     {
         s << std::left;
         
-        for (auto it = rows.begin(); it != rows.end(); ++it)
-        {
+        for (auto it = rows.begin(); it != rows.end(); ++it) {
             auto row = *it;
             for (int i = 0; i < row.cols.size(); ++i) {
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
