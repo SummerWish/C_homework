@@ -1,0 +1,6 @@
+create table Student 
+( 
+id float(4) NOT NULL; 
+ name char(100) NULL; 
+ grade float(4) NULL; 
+)

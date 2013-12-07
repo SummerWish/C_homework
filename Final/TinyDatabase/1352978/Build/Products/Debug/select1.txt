@@ -1,0 +1,1 @@
+select top 2 * from Student where grade = 90 
