@@ -8,14 +8,15 @@
 
 #include "MyConsole.h"
 
-const char *MyConsole::FLAG_CREATE_TABLE   = "-c";
-const char *MyConsole::FLAG_IMPORT         = "-i";
-const char *MyConsole::FLAG_SELECT         = "-s";
-const char *MyConsole::FLAG_UPDATE         = "-u";
-const char *MyConsole::FLAG_DELETE         = "-d";
-const char *MyConsole::FLAG_INDEX          = "-index";
-const char *MyConsole::FLAG_QUIT           = "-q";
-const char *MyConsole::FLAG_HELP           = "-h";
+const char *MyConsole::FLAG_CREATE_TABLE   = "c";
+const char *MyConsole::FLAG_IMPORT         = "i";
+const char *MyConsole::FLAG_SELECT         = "s";
+const char *MyConsole::FLAG_UPDATE         = "u";
+const char *MyConsole::FLAG_DELETE         = "d";
+const char *MyConsole::FLAG_INTERACTIVE    = "it";
+const char *MyConsole::FLAG_INDEX          = "index";
+const char *MyConsole::FLAG_QUIT           = "q";
+const char *MyConsole::FLAG_HELP           = "h";
 
 /*
  输出欢迎信息
@@ -61,7 +62,7 @@ MyConsole& MyConsole::bind(const MyConsoleHandler handler,
  */
 int MyConsole::read()
 {
-    std::cout << "> ";
+    std::cout << "-";
     
     // 解析输入的参数
     char input[1024];

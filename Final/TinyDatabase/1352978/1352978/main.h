@@ -16,13 +16,14 @@
 #include "MyString.h"
 #include "SQL.h"
 
-const char *VERSION = "0.0.1";
+const char *VERSION = "0.0.1.20131208.110400";
 
 int database_handler_create_table(std::vector<MyString> params);
 int database_handler_import(std::vector<MyString> params);
 int database_handler_select(std::vector<MyString> params);
 int database_handler_update(std::vector<MyString> params);
 int database_handler_delete(std::vector<MyString> params);
+int database_handler_interactive_mode(std::vector<MyString> params);
 int database_handler_help(std::vector<MyString> params);
 int database_handler_index(std::vector<MyString> params);
 int database_handler_quit(std::vector<MyString> params);
@@ -33,25 +34,29 @@ MyString read(const char *filename);
 
 char *_read(const char *filename)
 {
-    char *fcontent = NULL;
+    char *content = new char[1];
     int fsize = 0;
-    FILE *fp;
+    FILE *f;
     
-    fp = fopen(filename, "r");
-    if (fp) {
-        fseek(fp, 0, SEEK_END);
-        fsize = (int)ftell(fp);
-        rewind(fp);
+    f = fopen(filename, "r");
+    
+    if (f) {
+        // get FILE_SIZE
+        fseek(f, 0, SEEK_END);
+        fsize = (int)ftell(f);
+        rewind(f);
         
-        fcontent = (char*) malloc(fsize + 1);
-        fread(fcontent, 1, fsize, fp);
+        // read content
+        delete[] content;
+        content = new char[fsize + 1];
+        fread(content, sizeof(char), fsize, f);
         
-        fclose(fp);
+        fclose(f);
     }
     
-    fcontent[fsize] = '\0';
+    content[fsize] = '\0';
     
-    return fcontent;
+    return content;
 }
 
 MyString read(const MyString& filename)

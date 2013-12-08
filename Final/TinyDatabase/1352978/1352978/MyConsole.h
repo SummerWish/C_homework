@@ -41,6 +41,7 @@ public:
     static const char *FLAG_UPDATE;
     static const char *FLAG_DELETE;
     static const char *FLAG_INDEX;
+    static const char *FLAG_INTERACTIVE;
     static const char *FLAG_QUIT;
     static const char *FLAG_HELP;
     

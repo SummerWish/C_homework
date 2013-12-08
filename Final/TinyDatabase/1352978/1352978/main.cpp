@@ -21,6 +21,7 @@ int main(int argc, const char * argv[])
     console.bind(database_handler_select, MyConsole::FLAG_SELECT, "file", "Select data by file");
     console.bind(database_handler_update, MyConsole::FLAG_UPDATE, "file", "Update data by file");
     console.bind(database_handler_delete, MyConsole::FLAG_DELETE, "file", "Delete data by file");
+    console.bind(database_handler_interactive_mode, MyConsole::FLAG_INTERACTIVE, "", "Enter interactive mode");
     console.bind(database_handler_index, MyConsole::FLAG_INDEX, "0|1", "Switch off/on index");
     console.bind(database_handler_quit, MyConsole::FLAG_QUIT, "", "Quit");
     console.bind(database_handler_help, MyConsole::FLAG_HELP, "", "Show this screen");
@@ -30,6 +31,37 @@ int main(int argc, const char * argv[])
     while (console.read() != MyConsole::STATUS_EXIT) execute_n++;
     
     return 0;
+}
+
+/*
+ -it
+ */
+int database_handler_interactive_mode(std::vector<MyString> params)
+{
+    MyString line;
+    
+    do {
+        std::cout << "interactive> ";
+        
+        char input[1024];
+        std::cin.getline(input, 1024);
+        line = MyString(input);
+        
+        if (line != "exit") {
+            SQLResultObject result = sql.execute(line);
+            if (!result.ok) {
+                std::cout << "Error: " << result.err << std::endl;
+            } else {
+                std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
+                std::cout << "Affected " << result.n << " rows." << std::endl;
+                if (result.rows.size() > 0) {
+                    result.print(std::cout);
+                }
+            }
+        }
+    } while (line != "exit");
+    
+    return MyConsole::STATUS_OK;
 }
 
 /*
@@ -43,7 +75,6 @@ int database_handler_create_table(std::vector<MyString> params)
         return MyConsole::STATUS_FAIL;
     } else {
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-        
         return MyConsole::STATUS_OK;
     }
 }
