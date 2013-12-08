@@ -68,7 +68,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             // create columns
             for (auto it = query._create_table_columns.begin(); it != query._create_table_columns.end(); ++it) {
-                auto _col = *it;
+                auto &_col = *it;
                 bool result;
                 result = _storage[tableName].createColumn(_col.name, _col.type, _col.size, _col.can_null);
                 
@@ -107,9 +107,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             // delete rows
             if (has_condition) {
                 for (auto it = table.rows.begin(); it != table.rows.end(); ) {
-                    auto _row = *it;
-                
-                    if (condition.test(_row)) {
+                    if (condition.test((*it))) {
                         it = table.rows.erase(it);
                         affected_rows++;
                     } else {
@@ -197,7 +195,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             if (has_condition) {
                 for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                    auto _row = *it;
+                    auto &_row = *it;
                     if (condition.test(_row)) {
                         result.push_back(_row);
                     }
@@ -294,7 +292,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             if (has_condition) {
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        auto _row = *it;
+                        auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_f = set_col_v_f;
                             result.push_back(_row);
@@ -303,7 +301,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        auto _row = *it;
+                        auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_s = set_col_v_s;
                             result.push_back(_row);

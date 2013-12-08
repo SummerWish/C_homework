@@ -139,7 +139,7 @@ void SQLQueryObject::_print() const
 bool SQLQueryObject::checkCondition(const SQLTable& table) const
 {
     for (int i = 0; i < _where_statements.size(); ++i) {
-        if (_where_statements[i].type != SQLConstants::WHERE_COMPONENT_STATEMENT) {
+        if (_where_statements[i].type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
             if (table._colIndex.find(_where_statements[i].statement.name.toUpper()) == table._colIndex.end()) {
                 return false;
             }
@@ -178,7 +178,7 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     std::vector<CompiledSQLConditionComponentObject> infix;
     
     for (auto it = _where_statements.begin(); it != _where_statements.end(); ++it) {
-        auto component = (*it);
+        auto &component = (*it);
         
         CompiledSQLConditionComponentObject t;
         
@@ -198,7 +198,7 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     std::stack<CompiledSQLConditionComponentObject> operator_stack;
     
     for (auto it = infix.begin(); it != infix.end(); ++it) {
-        auto p = (*it);
+        auto &p = (*it);
         
         if (isOperator(p)) {
             while (!operator_stack.empty() && isOperator(operator_stack.top()) && getPriority(operator_stack.top()) >= getPriority(p)) {
