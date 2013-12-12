@@ -23,7 +23,7 @@ public:
     bool ok;
     MyString err;
     int n;
-    int execute_time;
+    long execute_time;
     MyString tableName;
     std::vector<int> colTypes;
     std::vector<SQLTableRow> rows;
@@ -36,17 +36,17 @@ public:
     /*
      空结果构造函数
      */
-    SQLResultObject(int time, const MyString& affect_table);
+    SQLResultObject(long time, const MyString& affect_table);
     
     /*
      无返回构造函数
      */
-    SQLResultObject(int time, const MyString& affect_table, int affected_rows);
+    SQLResultObject(long time, const MyString& affect_table, int affected_rows);
     
     /*
      返回结果集的构造函数
      */
-    SQLResultObject(int time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
+    SQLResultObject(long time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
     
     /*
      输出结果

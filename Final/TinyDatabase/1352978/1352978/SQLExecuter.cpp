@@ -43,7 +43,7 @@ bool sort_string_col_desc(const SQLTableRow& r1, const SQLTableRow& r2)
 
 SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
 {
-    std::time_t t = std::time(0);
+    MyTimer timer;
     
     //std::cout << query._query << std::endl;
     
@@ -77,7 +77,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 }
             }
             
-            return *new SQLResultObject((int)(std::time(0) - t), tableName);
+            return *new SQLResultObject(timer.elapsed(), tableName);
             
             break;
         }
@@ -119,7 +119,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 table.rows.clear();
             }
             
-            return *new SQLResultObject((int)(std::time(0) - t), tableName, affected_rows);
+            return *new SQLResultObject(timer.elapsed(), tableName, affected_rows);
             
             break;
         }
@@ -187,7 +187,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             // TOP = 0: 返回空的列表
             if (top_limit == 0) {
-                return *new SQLResultObject((int)(std::time(0) - t));
+                return *new SQLResultObject(timer.elapsed(), tableName);
             }
             
             // begin selecting rows
@@ -235,7 +235,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             result.clear();
             
             // return final result
-            return *new SQLResultObject((int)(std::time(0) - t), tableName, result_final, filter_types);
+            return *new SQLResultObject(timer.elapsed(), tableName, result_final, filter_types);
             
             break;
         }
@@ -325,7 +325,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 }
             }
             
-            return *new SQLResultObject((int)(std::time(0) - t), tableName, result, filter_types);
+            return *new SQLResultObject(timer.elapsed(), tableName, result, filter_types);
             
             break;
         }
@@ -341,7 +341,7 @@ SQLResultObject& SQLExecuter::import(const char *table, const char *filepath)
 
 SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath)
 {
-    std::time_t t = std::time(0);
+    MyTimer timer;
     
     MyString table_ = table.toUpper();
     
@@ -353,7 +353,7 @@ SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath
     std::ifstream fin = std::ifstream(filepath);
     int n = _storage[table_].import(fin);
     
-    return *new SQLResultObject((int)(std::time(0) - t), table_, n);
+    return *new SQLResultObject(timer.elapsed(), table_, n);
 }
 
 void SQLExecuter::xport(const char *table, const char *filepath)

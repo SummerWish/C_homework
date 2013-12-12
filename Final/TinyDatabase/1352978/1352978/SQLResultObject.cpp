@@ -14,14 +14,14 @@ SQLResultObject::SQLResultObject(const MyString& error)
     err = error;
 }
 
-SQLResultObject::SQLResultObject(int time, const MyString& affect_table)
+SQLResultObject::SQLResultObject(long time, const MyString& affect_table)
 {
     tableName = affect_table;
     execute_time = time;
     ok = true;
 }
 
-SQLResultObject::SQLResultObject(int time, const MyString& affect_table, int affected_rows)
+SQLResultObject::SQLResultObject(long time, const MyString& affect_table, int affected_rows)
 {
     tableName = affect_table;
     execute_time = time;
@@ -29,7 +29,7 @@ SQLResultObject::SQLResultObject(int time, const MyString& affect_table, int aff
     n = affected_rows;
 }
 
-SQLResultObject::SQLResultObject(int time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes)
+SQLResultObject::SQLResultObject(long time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes)
 {
     tableName = affect_table;
     execute_time = time;

@@ -33,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		A919F83118533BA400918355 /* SQLConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SQLConstants.h; sourceTree = "<group>"; };
+		A926A58B185964340080D207 /* MyTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyTimer.h; sourceTree = "<group>"; };
 		A92D51F118503BD6009BC936 /* MyConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MyConsole.cpp; sourceTree = "<group>"; };
 		A949B6161852E4790029C862 /* SQLQueryObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SQLQueryObject.cpp; sourceTree = "<group>"; };
 		A949B6181852E78B0029C862 /* SQLExecuter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SQLExecuter.cpp; sourceTree = "<group>"; };
@@ -96,6 +97,7 @@
 				A92D51F118503BD6009BC936 /* MyConsole.cpp */,
 				A9DA19721850518D0068778C /* MyString.h */,
 				A9DA19711850518D0068778C /* MyString.cpp */,
+				A926A58B185964340080D207 /* MyTimer.h */,
 				A919F83118533BA400918355 /* SQLConstants.h */,
 				A949B6271852F54C0029C862 /* SQLResultObject.h */,
 				A949B6261852F54C0029C862 /* SQLResultObject.cpp */,

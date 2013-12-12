@@ -11,7 +11,8 @@
 
 #include <iostream>
 #include <vector>
-#include <ctime>
+#include "MyString.h"
+#include "MyTimer.h"
 #include "SQLConstants.h"
 #include "SQLTableHeaderColumn.h"
 #include "SQLTableColumn.h"
