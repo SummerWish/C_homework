@@ -22,7 +22,7 @@ int main(int argc, const char * argv[])
     console.bind(database_handler_update, MyConsole::FLAG_UPDATE, "file", "Update data by file");
     console.bind(database_handler_delete, MyConsole::FLAG_DELETE, "file", "Delete data by file");
     console.bind(database_handler_interactive_mode, MyConsole::FLAG_INTERACTIVE, "", "Enter interactive mode");
-    console.bind(database_handler_index, MyConsole::FLAG_INDEX, "0|1", "Switch off/on index");
+    //console.bind(database_handler_index, MyConsole::FLAG_INDEX, "0|1", "Switch off/on index");
     console.bind(database_handler_quit, MyConsole::FLAG_QUIT, "", "Quit");
     console.bind(database_handler_help, MyConsole::FLAG_HELP, "", "Show this screen");
     

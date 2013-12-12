@@ -9,7 +9,16 @@ MIT License. Copy the code at your own risk.
 
 ```
 Breezewish's Tiny SQL Database
-Version: 0.0.1
+Version: 0.0.1.20131212.120618
+-h
+c       file           Create table from file
+i       table file     Import data to table
+s       file           Select data by file
+u       file           Update data by file
+d       file           Delete data by file
+it                     Enter interactive mode
+q                      Quit
+h                      Show this screen
 -c create.txt
 Completed without errors in 0ms.
 -i student data.txt
@@ -72,16 +81,6 @@ Affected 4 rows.
 3              hello          90             
 4              "hello"        80             
 interactive> exit
--h
-c       file           Create table from file
-i       table file     Import data to table
-s       file           Select data by file
-u       file           Update data by file
-d       file           Delete data by file
-it                     Enter interactive mode
-index   0|1            Switch off/on index
-q                      Quit
-h                      Show this screen
 -q
 bye
 ```
