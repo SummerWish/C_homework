@@ -15,8 +15,6 @@
 #include <vector>
 #include "MyString.h"
 
-extern const char *VERSION;
-
 typedef std::ostream& (*manip) (std::ostream&);
 typedef int (*MyConsoleHandler)(std::vector<MyString>);
 
@@ -61,7 +59,7 @@ public:
     /*
      输出欢迎信息
      */
-    void hello();
+    void hello(const char *version);
     
     /*
      输出帮助信息

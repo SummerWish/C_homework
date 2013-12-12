@@ -1,1 +1,0 @@
-update Student set grade = 80 where id = 5

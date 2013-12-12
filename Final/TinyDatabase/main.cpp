@@ -27,7 +27,7 @@ int main(int argc, const char * argv[])
     console.bind(database_handler_help, MyConsole::FLAG_HELP, "", "Show this screen");
     
     // loop
-    console.hello();
+    console.hello(APP_VERSION);
     while (console.read() != MyConsole::STATUS_EXIT) execute_n++;
     
     return 0;

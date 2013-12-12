@@ -51,7 +51,7 @@ class SQLQueryObject
 {
 public:
     
-    bool hasError = false;
+    bool hasError;
     MyString _query;
     std::map<int, int> _int;
     std::map<int, MyString> _str;
@@ -63,7 +63,7 @@ public:
     SQLQueryObject(const MyString& query);
     int OperationStringToToken(const MyString& s) const;
     int ColumnTypeToInt(const MyString& s) const;
-    void _print() const;
+    //void _print() const;
     
     /*
      将 COLUMN_NAME 转换为 index，并转换为后缀表达式

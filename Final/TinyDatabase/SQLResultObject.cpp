@@ -43,8 +43,8 @@ void SQLResultObject::print(std::ostream& s)
 {
     s << std::left;
     
-    for (auto it = rows.begin(); it != rows.end(); ++it) {
-        auto &row = *it;
+    for (std::vector<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
+        SQLTableRow &row = *it;
         for (int i = 0; i < row.cols.size(); ++i) {
             if (colTypes[i] == SQLConstants::COLUMN_TYPE_CHAR) {
                 s << std::setw(15) << row.cols[i]._v_s;

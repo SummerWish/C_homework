@@ -22,10 +22,12 @@ SQLWhereComponentObject::SQLWhereComponentObject(const SQLWhereStatementObject _
 
 SQLQueryObject::SQLQueryObject()
 {
+    hasError = false;
 }
 
 SQLQueryObject::SQLQueryObject(const MyString& query)
 {
+    hasError = false;
     _query = query;
 }
 
@@ -57,6 +59,7 @@ int SQLQueryObject::ColumnTypeToInt(const MyString& s) const
     }
 }
 
+/*
 // DEBUG only
 void SQLQueryObject::_print() const
 {
@@ -135,6 +138,7 @@ void SQLQueryObject::_print() const
     std::cout << "==================================" << std::endl;
     
 }
+*/
 
 bool SQLQueryObject::checkCondition(const SQLTable& table) const
 {
@@ -177,8 +181,8 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     // Convert to column index
     std::vector<CompiledSQLConditionComponentObject> infix;
     
-    for (auto it = _where_statements.begin(); it != _where_statements.end(); ++it) {
-        auto &component = (*it);
+    for (std::vector<const SQLWhereComponentObject>::iterator it = _where_statements.begin(); it != _where_statements.end(); ++it) {
+        const SQLWhereComponentObject &component = (*it);
         
         CompiledSQLConditionComponentObject t;
         
@@ -197,8 +201,8 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     std::vector<CompiledSQLConditionComponentObject> postfix;
     std::stack<CompiledSQLConditionComponentObject> operator_stack;
     
-    for (auto it = infix.begin(); it != infix.end(); ++it) {
-        auto &p = (*it);
+    for (std::vector<CompiledSQLConditionComponentObject>::iterator it = infix.begin(); it != infix.end(); ++it) {
+        CompiledSQLConditionComponentObject &p = (*it);
         
         if (isOperator(p)) {
             while (!operator_stack.empty() && isOperator(operator_stack.top()) && getPriority(operator_stack.top()) >= getPriority(p)) {

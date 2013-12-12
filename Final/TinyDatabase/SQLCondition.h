@@ -37,7 +37,7 @@ public:
     
     bool calcStatement(const SQLTableRow& row, const CompiledSQLConditionStatementObject& statement)
     {
-        auto col = row.cols[statement.rowIndex];
+        SQLTableColumn col = row.cols[statement.rowIndex];
         
         if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
             
@@ -93,7 +93,7 @@ public:
             return true;
         }
         
-        for (auto it = condition_components.begin(); it != condition_components.end(); ++it) {
+        for (std::vector<CompiledSQLConditionComponentObject>::iterator it = condition_components.begin(); it != condition_components.end(); ++it) {
             switch ((*it).type) {
                 case SQLConstants::WHERE_COMPONENT_AND:
                 {

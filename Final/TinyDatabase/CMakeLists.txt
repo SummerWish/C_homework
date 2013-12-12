@@ -1,0 +1,5 @@
+PROJECT(TINYDATABASE CXX)
+cmake_minimum_required(VERSION 2.6)
+aux_source_directory(. SRC_LIST)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+add_executable(tinydatabase ${SRC_LIST})

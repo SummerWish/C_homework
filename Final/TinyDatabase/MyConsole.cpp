@@ -21,10 +21,10 @@ const char *MyConsole::FLAG_HELP           = "h";
 /*
  输出欢迎信息
  */
-void MyConsole::hello()
+void MyConsole::hello(const char *version)
 {
     std::cout << "Breezewish's Tiny SQL Database" << std::endl;
-    std::cout << "Version: " << VERSION << std::endl;
+    std::cout << "Version: " << version << std::endl;
 }
 
 /*
@@ -52,7 +52,9 @@ MyConsole& MyConsole::bind(const MyConsoleHandler handler,
     MyString _flag = flag;
     
     _handlers[_flag] = handler;
-    _desc.push_back({flag, desc_params, desc});
+    
+    ConsoleDescItem it = {flag, desc_params, desc};
+    _desc.push_back(it);
     
     return *this;
 }
@@ -70,7 +72,7 @@ int MyConsole::read()
     std::vector<MyString> params = MyString(input).split((char*)" ");
     
     // 函数回调是否存在？
-    auto flag = _handlers.find(params[0]);
+    std::map<MyString, MyConsoleHandler>::iterator flag = _handlers.find(params[0]);
     if (flag == _handlers.end()) {
         return MyConsole::STATUS_OK;
     }
