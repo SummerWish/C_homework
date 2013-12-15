@@ -129,7 +129,7 @@ int database_handler_update(std::vector<MyString> params)
         MyString output = MyString("1352978_update_").concat(MyString(execute_n)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         std::cout << "Updated " << result.n << " rows." << std::endl;
-        std::cout << "Table data outputed to: " << output << std::endl;
+        std::cout << "Data outputed to: " << output << std::endl;
         result.xport(output);
         
         return MyConsole::STATUS_OK;

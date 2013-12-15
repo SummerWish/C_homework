@@ -1,16 +1,33 @@
 TinyDatabase
 ============
 
-Final term project @ Tongji University.
+A tiny in-memory SQL database. Just a final term homework.
 
-MIT License. Copy the code at your own risk.
-
-[Project requirement](http://sse.tongji.edu.cn/zhaoqinpei/Courses/CLanguage/2013级本科班课程项目.pdf)
+## Requirement
 
 ```
-Breezewish's Tiny SQL Database
-Version: 0.0.1.20131212.120618
--h
+g++ >= 4.7
+cmake >= 2.6
+```
+
+## Build
+
+```
+cmake .
+make
+```
+
+## Usage
+
+### Run
+
+```
+./tinydatabase
+```
+
+### Commands
+
+```
 c       file           Create table from file
 i       table file     Import data to table
 s       file           Select data by file
@@ -18,69 +35,157 @@ u       file           Update data by file
 d       file           Delete data by file
 it                     Enter interactive mode
 q                      Quit
-h                      Show this screen
+h                      Show help info
+```
+
+## Example
+
+### Create database
+
+create.txt:
+
+```sql
+create table Student 
+( 
+ id float(4) NOT NULL; 
+ name char(100) NULL; 
+ grade float(4) NULL; 
+)
+```
+
+Command:
+
+```
 -c create.txt
 Completed without errors in 0ms.
+```
+
+### Import data
+
+data.txt:
+
+```
+1,aaa,90
+2,bbb,90
+3,ccc,90
+4,ddd,80
+5,ddd,70
+```
+
+Command:
+
+```
 -i student data.txt
 Completed without errors in 0ms.
 Imported 5 rows.
--it
-interactive> select * from student
+```
+
+### Select
+
+select.txt:
+
+```sql
+select top 2 * from Student where grade = 90
+```
+
+Command:
+
+```
+-s select.txt
 Completed without errors in 0ms.
-Affected 5 rows.
+Selected 2 rows.
+Data outputed to: 1352978_select_3.txt
+```
+
+Select result (1352978\_select\_3.txt):
+
+```
 1              aaa            90             
 2              bbb            90             
-3              ccc            90             
-4              ddd            80             
-5              ddd            70             
-interactive> select id, name from student where grade > 75
+```
+
+### Update
+
+update.txt:
+
+```sql
+update Student set grade = 80 where id = 5
+```
+
+Command:
+
+```
+-u update.txt
 Completed without errors in 0ms.
-Affected 4 rows.
-1              aaa            
-2              bbb            
-3              ccc            
-4              ddd            
-interactive> select id, name from student where grade > 75 and (name like "a" or name = "bbb")
-Completed without errors in 0ms.
-Affected 2 rows.
-1              aaa            
-2              bbb            
-interactive> delete from student where name="ddd" and grade < 80
+Updated 1 rows.
+Data outputed to: 1352978_update_4.txt
+```
+
+Update result (1352978\_update\_4.txt):
+
+```
+5              ddd            80             
+```
+
+### Delete
+
+delete.txt:
+
+```sql
+delete from Student where id = 4
+```
+
+Command:
+
+```
+-d delete.txt
 Completed without errors in 0ms.
 Affected 1 rows.
-interactive> select * from student
-Completed without errors in 0ms.
-Affected 4 rows.
+Table data outputed to: 1352978_delete_5.txt
+```
+
+Delete result (1352978\_delete\_5.txt):
+
+```
 1              aaa            90             
 2              bbb            90             
 3              ccc            90             
-4              ddd            80             
-interactive> update student set name="hello" where grade > 80
-Completed without errors in 0ms.
-Affected 3 rows.
-1              hello          90             
-2              hello          90             
-3              hello          90             
-interactive> select * from student
-Completed without errors in 0ms.
-Affected 4 rows.
-1              hello          90             
-2              hello          90             
-3              hello          90             
-4              ddd            80             
-interactive> update student set name="\"hello\"" where id >= 4 or id < 2
-Completed without errors in 0ms.
-Affected 2 rows.
-1              "hello"        90             
-4              "hello"        80             
-interactive> select * from student
-Completed without errors in 0ms.
-Affected 4 rows.
-1              "hello"        90             
-2              hello          90             
-3              hello          90             
-4              "hello"        80             
-interactive> exit
--q
-bye
+5              ddd            80             
 ```
+
+## Supported SQL Syntax
+
+### Overview
+
+TinyDatabase only supports the following 4 types of operations.
+
+```sql
+CREATE TABLE table_name (
+    column_name datatype(length) [NOT] NULL; 
+    ...
+) 
+```
+
+```sql
+SELECT [TOP n] {*|column1, column2, ...} FROM table_name 
+[WHERE where_statement]
+[ORDER BY column_name [ASC|DESC] ] 
+```
+
+```sql
+UPDATE table_name SET colume_name = column_value 
+[WHERE where_statement]
+```
+
+```sql
+DELETE FROM table_name 
+[WHERE where_statement]
+```
+
+where_statement:
+
+//TODO
+
+### Example
+
+//TODO
