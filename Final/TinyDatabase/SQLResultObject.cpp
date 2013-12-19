@@ -29,7 +29,7 @@ SQLResultObject::SQLResultObject(long time, const MyString& affect_table, int af
     n = affected_rows;
 }
 
-SQLResultObject::SQLResultObject(long time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes)
+SQLResultObject::SQLResultObject(long time, const MyString& affect_table, const std::list<SQLTableRow>& _rows, const std::vector<int>& _colTypes)
 {
     tableName = affect_table;
     execute_time = time;
@@ -43,7 +43,7 @@ void SQLResultObject::print(std::ostream& s)
 {
     s << std::left;
     
-    for (std::vector<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
+    for (std::list<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
         SQLTableRow &row = *it;
         for (int i = 0; i < row.cols.size(); ++i) {
             if (colTypes[i] == SQLConstants::COLUMN_TYPE_CHAR) {

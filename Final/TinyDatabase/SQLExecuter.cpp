@@ -106,7 +106,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             // delete rows
             if (has_condition) {
-                for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ) {
+                for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ) {
                     if (condition.test((*it))) {
                         it = table.rows.erase(it);
                         affected_rows++;
@@ -191,17 +191,17 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             }
             
             // begin selecting rows
-            std::vector<SQLTableRow> result;
+            std::list<SQLTableRow> result;
             
             if (has_condition) {
-                for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
                     SQLTableRow &_row = *it;
                     if (condition.test(_row)) {
                         result.push_back(_row);
                     }
                 }
             } else {
-                result = std::vector<SQLTableRow>(table.rows.begin(), table.rows.end());
+                result = std::list<SQLTableRow>(table.rows.begin(), table.rows.end());
             }
             
             // begin sorting
@@ -209,23 +209,27 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 _sort_col = order_col;
                 if (order_order == SQLConstants::ORDER_ASC) {
                     if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        std::sort(result.begin(), result.end(), sort_float_col_asc);
+                        result.sort(sort_float_col_asc);
+                        //std::sort(result.begin(), result.end(), sort_float_col_asc);
                     } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        std::sort(result.begin(), result.end(), sort_string_col_asc);
+                        result.sort(sort_string_col_asc);
+                        //std::sort(result.begin(), result.end(), sort_string_col_asc);
                     }
                 } else if (order_order == SQLConstants::ORDER_DESC) {
                     if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        std::sort(result.begin(), result.end(), sort_float_col_desc);
+                        result.sort(sort_float_col_desc);
+                        //std::sort(result.begin(), result.end(), sort_float_col_desc);
                     } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        std::sort(result.begin(), result.end(), sort_string_col_desc);
+                        result.sort(sort_string_col_desc);
+                        //std::sort(result.begin(), result.end(), sort_string_col_desc);
                     }
                 }
             }
             
             // filter and top
-            std::vector<SQLTableRow> result_final;
+            std::list<SQLTableRow> result_final;
             
-            for (std::vector<SQLTableRow>::iterator it = result.begin(); it != result.end(); ++it) {
+            for (std::list<SQLTableRow>::iterator it = result.begin(); it != result.end(); ++it) {
                 result_final.push_back(filter.filter((*it)));
                 if (--top_limit == 0) {
                     break;
@@ -278,7 +282,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 set_col_v_s = query._str.find(SQLConstants::TOKEN_COLUMN_VALUE)->second;
             }
             
-            std::vector<SQLTableRow> result;
+            std::list<SQLTableRow> result;
             std::vector<int> filter_types;
             
             for (std::vector<SQLTableHeaderColumn>::iterator it = table.head.begin(); it != table.head.end(); ++it) {
@@ -291,7 +295,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             if (has_condition) {
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                    for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
                         SQLTableRow &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_f = set_col_v_f;
@@ -300,7 +304,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                         }
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
                         SQLTableRow &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_s = set_col_v_s;
@@ -311,13 +315,13 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 }
             } else {
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                    for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_f = set_col_v_f;
                         result.push_back((*it));
                         affected_rows++;
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    for (std::vector<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_s = set_col_v_s;
                         result.push_back((*it));
                         affected_rows++;

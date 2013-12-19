@@ -12,6 +12,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <list>
 #include <map>
 #include "MyString.h"
 #include "SQLTableHeaderColumn.h"
@@ -22,7 +23,7 @@ class SQLTable
 public:
     std::vector<SQLTableHeaderColumn> head;
     std::map<MyString, int> _colIndex;
-    std::vector<SQLTableRow> rows;
+    std::list<SQLTableRow> rows;
     
     bool createColumn(const MyString& name, int type, int size, bool can_null)
     {
@@ -48,7 +49,7 @@ public:
     {
         s << std::left;
         
-        for (std::vector<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
+        for (std::list<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
             SQLTableRow &row = *it;
             for (int i = 0; i < row.cols.size(); ++i) {
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
@@ -68,7 +69,7 @@ public:
         int affected_rows = 0;
         
         while (s.getline(tmp, 4096)) {
-            std::vector<MyString> cols = MyString(tmp).split((char*)",");
+            std::vector<MyString> cols = my_split(tmp, (char*)",");
             
             if (cols.size() > head.size()) {
                 continue;

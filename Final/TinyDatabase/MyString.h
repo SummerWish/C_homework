@@ -63,6 +63,14 @@ public:
     MyString(const char* str);
     
     /*
+     从char*构造以length为长度的字符串
+     
+     eg:
+     MyString s("str", 1);
+     */
+    MyString(const char* str, int length);
+    
+    /*
      从MyString构造
      
      eg:
@@ -175,6 +183,11 @@ public:
      若len为-1，则返回字符串从start开始直到结束的子串
      */
     MyString& substring(int start, int len) const;
+    /*
+     返回字符串中从start开始长度为len的子串
+     不检查边界, 不支持len<0
+     */
+    MyString& _substring(int start, int len) const;
     
     /*
      查找子串，若未找到返回-1
@@ -229,5 +242,17 @@ public:
 	friend std::istream& operator>>(std::istream& s, MyString& str);
     
 };
+
+char *my_strcat(char *dest, const char *src);
+char *my_strcpy(char *dest, const char *src);
+char *my_strchr(const char *s, char c);
+int my_strlen(const char *str);
+int my_strcmp(const char *p1, const char *p2);
+char *my_strstr(const char *s1, const char *s2);
+
+/*
+ highly optimized string split
+ */
+std::vector<MyString>& my_split(const char *str, const char *delim);
 
 #endif /* defined(___352978__MyString__) */

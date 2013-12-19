@@ -12,6 +12,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <list>
 #include <fstream>
 #include "MyString.h"
 #include "SQLConstants.h"
@@ -26,7 +27,7 @@ public:
     long execute_time;
     MyString tableName;
     std::vector<int> colTypes;
-    std::vector<SQLTableRow> rows;
+    std::list<SQLTableRow> rows;
     
     /*
      错误构造函数
@@ -46,7 +47,7 @@ public:
     /*
      返回结果集的构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table, const std::vector<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
+    SQLResultObject(long time, const MyString& affect_table, const std::list<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
     
     /*
      输出结果

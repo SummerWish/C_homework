@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
 #include "MyString.h"
 #include "MyTimer.h"
 #include "SQLConstants.h"

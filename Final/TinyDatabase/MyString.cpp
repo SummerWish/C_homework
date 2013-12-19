@@ -104,6 +104,24 @@ char *my_strstr(const char *s1, const char *s2)
 }
 
 /*
+ highly optimized string split
+ */
+std::vector<MyString>& my_split(const char *str, const char *delim)
+{
+    std::vector<MyString> *ret = new std::vector<MyString>;
+    const char *posBegin = str, *posEnd;
+    
+    while ((posEnd = my_strstr(posBegin, delim)) != 0) {
+        ret->push_back(MyString(posBegin, (int)(posEnd - posBegin)));
+        posBegin = posEnd + 1;
+    }
+    
+    ret->push_back(MyString(posBegin));
+    
+    return *ret;
+}
+
+/*
  空构造函数
  
  eg:
@@ -163,6 +181,21 @@ MyString::MyString(const char *str)
 {
     _str = new char[my_strlen(str) + 1];
     my_strcpy(_str, str);
+}
+
+/*
+ 从char*构造以length为长度的字符串
+ 
+ eg:
+ MyString s("str", 1);
+ */
+MyString::MyString(const char* str, int length)
+{
+    _str = new char[length + 1];
+    for (int i = 0; i < length; ++i) {
+        _str[i] = str[i];
+    }
+    _str[length] = '\0';
 }
 
 /*
@@ -456,6 +489,31 @@ MyString& MyString::substring(int start, int len) const
 }
 
 /*
+ 返回字符串中从start开始长度为len的子串
+ 不检查边界, 不支持len<0
+ */
+MyString& MyString::_substring(int start, int len) const
+{
+    // 无效参数
+    if (start < 0 || len < 0) {
+        return *new MyString(_str);
+    }
+    
+    MyString *newstr = new MyString();
+    
+    // 截取子串
+    delete[] newstr->_str;
+    newstr->_str = new char[len + 1];
+    newstr->_str[len] = '\0';
+    
+    for (int i = 0; i < len; ++i) {
+        newstr->_str[i] = _str[start + i];
+    }
+    
+    return *newstr;
+}
+
+/*
  查找子串，若未找到则返回-1
  */
 int MyString::indexOf(const char *search) const
@@ -479,16 +537,17 @@ int MyString::indexOf(const MyString search) const
  */
 std::vector<MyString>& MyString::split(const char *delim) const
 {
-    MyString clone(_str);
+    MyString clone = MyString(_str);
     std::vector<MyString> *ret = new std::vector<MyString>;
-    int pos;
     
-    while ((pos = clone.indexOf(delim)) != -1) {
-        ret->push_back(clone.substring(0, pos));
-        clone = clone.substring(pos + 1, -1);
+    char *posBegin = _str, *posEnd;
+    
+    while ((posEnd = my_strstr(posBegin, delim)) != 0) {
+        ret->push_back(clone._substring((int)(posBegin - _str), (int)(posEnd - posBegin)));
+        posBegin = posEnd + 1;
     }
     
-    ret->push_back(clone);
+    ret->push_back(clone.substring((int)(posBegin - _str), -1));
     
     return *ret;
 }
