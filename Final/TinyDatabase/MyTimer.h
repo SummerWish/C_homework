@@ -9,34 +9,66 @@
 #ifndef _352978_MyTimer_h
 #define _352978_MyTimer_h
 
+#ifdef WIN32
+#include <windows.h>
+#else
 #include <sys/time.h>
-#include <unistd.h>
+#include <ctime>
+#endif
 
-//http://stackoverflow.com/questions/588307/c-obtaining-milliseconds-time-on-linux-clock-doesnt-seem-to-work-properl
+// From:
+// http://abdullahakay.blogspot.com/2012/12/cross-platform-millisecond-timer.html
 
 class MyTimer
 {
 private:
-    struct timeval start;
+    
+    int64_t getTimestampMS()
+    {
+#ifdef WIN32
+        /* Windows */
+        FILETIME ft;
+        LARGE_INTEGER li;
+        
+        /* Get the amount of 100 nano seconds intervals elapsed since January 1, 1601 (UTC) and copy it
+         * to a LARGE_INTEGER structure. */
+        GetSystemTimeAsFileTime(&ft);
+        li.LowPart = ft.dwLowDateTime;
+        li.HighPart = ft.dwHighDateTime;
+        
+        uint64 ret = li.QuadPart;
+        ret -= 116444736000000000LL; /* Convert from file time to UNIX epoch time. */
+        ret /= 10000; /* From 100 nano seconds (10^-7) to 1 millisecond (10^-3) intervals */
+        
+        return ret;
+#else
+        /* Linux */
+        struct timeval tv;
+        
+        gettimeofday(&tv, NULL);
+        
+        int64_t ret = tv.tv_usec;
+        /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+        ret /= 1000;
+        
+        /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) */
+        ret += (tv.tv_sec * 1000);
+        
+        return ret;
+#endif
+    }
+    
+    int64_t start;
+    
 public:
     MyTimer()
     {
-        gettimeofday(&start, NULL);
+        start = getTimestampMS();
     }
     
     long elapsed()
     {
-        struct timeval end;
-        gettimeofday(&end, NULL);
-        
-        long mtime, seconds, useconds;
-        
-        seconds  = end.tv_sec  - start.tv_sec;
-        useconds = end.tv_usec - start.tv_usec;
-        
-        mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-        
-        return mtime;
+        return getTimestampMS() - start;
     }
 };
 
