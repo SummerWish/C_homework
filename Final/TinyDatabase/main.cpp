@@ -48,7 +48,7 @@ int database_handler_interactive_mode(std::vector<MyString> params)
         line = MyString(input);
         
         if (line != "exit") {
-            SQLResultObject result = sql.execute(line);
+            auto result = sql.execute(line);
             if (!result.ok) {
                 std::cout << "Error: " << result.err << std::endl;
             } else {
@@ -69,7 +69,7 @@ int database_handler_interactive_mode(std::vector<MyString> params)
  */
 int database_handler_create_table(std::vector<MyString> params)
 {
-    SQLResultObject result = sql.execute(read(params[0]));
+    auto result = sql.execute(read(params[0]));
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;
@@ -84,7 +84,7 @@ int database_handler_create_table(std::vector<MyString> params)
  */
 int database_handler_import(std::vector<MyString> params)
 {
-    SQLResultObject result = sql.import(params[0], params[1].toCString());
+    auto result = sql.import(params[0], params[1].toCString());
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;
@@ -101,7 +101,7 @@ int database_handler_import(std::vector<MyString> params)
  */
 int database_handler_select(std::vector<MyString> params)
 {
-    SQLResultObject result = sql.execute(read(params[0]));
+    auto result = sql.execute(read(params[0]));
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;
@@ -121,7 +121,7 @@ int database_handler_select(std::vector<MyString> params)
  */
 int database_handler_update(std::vector<MyString> params)
 {
-    SQLResultObject result = sql.execute(read(params[0]));
+    auto result = sql.execute(read(params[0]));
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;
@@ -141,7 +141,7 @@ int database_handler_update(std::vector<MyString> params)
  */
 int database_handler_delete(std::vector<MyString> params)
 {
-    SQLResultObject result = sql.execute(read(params[0]));
+    auto result = sql.execute(read(params[0]));
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;

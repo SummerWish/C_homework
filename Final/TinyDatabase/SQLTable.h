@@ -49,8 +49,8 @@ public:
     {
         s << std::left;
         
-        for (std::list<SQLTableRow>::iterator it = rows.begin(); it != rows.end(); ++it) {
-            SQLTableRow &row = *it;
+        for (auto it = rows.begin(); it != rows.end(); ++it) {
+            auto &row = *it;
             for (int i = 0; i < row.cols.size(); ++i) {
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
                     s << std::setw(15) << row.cols[i]._v_s;
@@ -69,7 +69,7 @@ public:
         int affected_rows = 0;
         
         while (s.getline(tmp, 4096)) {
-            std::vector<MyString> cols = my_split(tmp, (char*)",");
+            auto cols = my_split(tmp, (char*)",");
             
             if (cols.size() > head.size()) {
                 continue;

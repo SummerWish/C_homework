@@ -18,7 +18,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
 {
     // maybe better or worse method: RegExp
     
-    SQLQueryObject *query = new SQLQueryObject(line);
+    auto *query = new SQLQueryObject(line);
     
     int pos = 0, pos_max = line.length();
     char ch;

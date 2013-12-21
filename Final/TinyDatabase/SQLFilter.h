@@ -25,9 +25,9 @@ public:
             return row;
         }
         
-        SQLTableRow *ret = new SQLTableRow();
+        auto *ret = new SQLTableRow();
         
-        for (std::set<int>::iterator it = columns.begin(); it != columns.end(); ++it) {
+        for (auto it = columns.begin(); it != columns.end(); ++it) {
             ret->cols.push_back(row.cols[(*it)]);
         }
         

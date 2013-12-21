@@ -69,10 +69,10 @@ int MyConsole::read()
     // 解析输入的参数
     char input[1024];
     std::cin.getline(input, 1024);
-    std::vector<MyString> params = MyString(input).split((char*)" ");
+    std::vector<MyString> params = my_split(input, " ");
     
     // 函数回调是否存在？
-    std::map<MyString, MyConsoleHandler>::iterator flag = _handlers.find(params[0]);
+    auto flag = _handlers.find(params[0]);
     if (flag == _handlers.end()) {
         return MyConsole::STATUS_OK;
     }

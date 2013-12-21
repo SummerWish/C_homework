@@ -181,8 +181,8 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     // Convert to column index
     std::vector<CompiledSQLConditionComponentObject> infix;
     
-    for (std::vector<const SQLWhereComponentObject>::iterator it = _where_statements.begin(); it != _where_statements.end(); ++it) {
-        const SQLWhereComponentObject &component = (*it);
+    for (auto it = _where_statements.begin(); it != _where_statements.end(); ++it) {
+        auto &component = *it;
         
         CompiledSQLConditionComponentObject t;
         
@@ -201,8 +201,8 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     std::vector<CompiledSQLConditionComponentObject> postfix;
     std::stack<CompiledSQLConditionComponentObject> operator_stack;
     
-    for (std::vector<CompiledSQLConditionComponentObject>::iterator it = infix.begin(); it != infix.end(); ++it) {
-        CompiledSQLConditionComponentObject &p = (*it);
+    for (auto it = infix.begin(); it != infix.end(); ++it) {
+        auto &p = *it;
         
         if (isOperator(p)) {
             while (!operator_stack.empty() && isOperator(operator_stack.top()) && getPriority(operator_stack.top()) >= getPriority(p)) {
@@ -231,7 +231,7 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     
     //postfix.pop_back();
     
-    CompiledSQLConditionObject *ret = new CompiledSQLConditionObject;
+    auto *ret = new CompiledSQLConditionObject;
     ret->condition_components = postfix;
     
     return *ret;
@@ -275,7 +275,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
 CompiledSQLFilterObject& SQLQueryObject::compileFilter(const SQLTable& table) const
 {
     std::set<int> filter;
-    CompiledSQLFilterObject *ret = new CompiledSQLFilterObject;
+    auto *ret = new CompiledSQLFilterObject;
     
     if (_select_columns[0] == "*") {
         ret->wild = true;

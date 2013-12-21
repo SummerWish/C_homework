@@ -56,7 +56,7 @@ public:
     
     SQLTable& createTable(const MyString& table)
     {
-        SQLTable *table_ = new SQLTable();
+        auto *table_ = new SQLTable();
         _tables[table.toUpper()] = *table_;
         return *table_;
     }

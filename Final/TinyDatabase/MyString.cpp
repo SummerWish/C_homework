@@ -47,7 +47,7 @@ char *my_strchr(const char *s, char c)
 {
     while (*s != c) {
         if (*s++ == '\0') {
-            return 0;
+            return nullptr;
         }
     }
     
@@ -100,7 +100,7 @@ char *my_strstr(const char *s1, const char *s2)
         }
     }
     
-    return 0;
+    return nullptr;
 }
 
 /*
@@ -108,10 +108,10 @@ char *my_strstr(const char *s1, const char *s2)
  */
 std::vector<MyString>& my_split(const char *str, const char *delim)
 {
-    std::vector<MyString> *ret = new std::vector<MyString>;
-    const char *posBegin = str, *posEnd;
+    auto *ret = new std::vector<MyString>;
+    const char *posBegin = str, *posEnd = nullptr;
     
-    while ((posEnd = my_strstr(posBegin, delim)) != 0) {
+    while ((posEnd = my_strstr(posBegin, delim)) != nullptr) {
         ret->push_back(MyString(posBegin, (int)(posEnd - posBegin)));
         posBegin = posEnd + 1;
     }
@@ -268,7 +268,7 @@ MyString& MyString::operator=(const MyString& str)
  */
 MyString& MyString::concat(char ch) const
 {
-    MyString *newstr = new MyString();
+    auto *newstr = new MyString();
     
     int len = length();
     
@@ -291,7 +291,7 @@ MyString& MyString::concat(char ch) const
  */
 MyString& MyString::concat(const char *str) const
 {
-    MyString *newstr = new MyString();
+    auto *newstr = new MyString();
     
     delete[] newstr->_str;
     newstr->_str = new char[length() + my_strlen(str) + 1];
@@ -311,7 +311,7 @@ MyString& MyString::concat(const char *str) const
  */
 MyString& MyString::concat(const MyString& str) const
 {
-    MyString *newstr = new MyString();
+    auto *newstr = new MyString();
     
     delete[] newstr->_str;
     newstr->_str = new char[length() + str.length() + 1];
@@ -464,7 +464,7 @@ MyString& MyString::substring(int start, int len) const
         return *new MyString(_str);
     }
     
-    MyString *newstr = new MyString();
+    auto *newstr = new MyString();
     
     // 返回空字符串
     if (len == 0 || start >= max_len) {
@@ -499,7 +499,7 @@ MyString& MyString::_substring(int start, int len) const
         return *new MyString(_str);
     }
     
-    MyString *newstr = new MyString();
+    auto *newstr = new MyString();
     
     // 截取子串
     delete[] newstr->_str;
@@ -537,8 +537,8 @@ int MyString::indexOf(const MyString search) const
  */
 std::vector<MyString>& MyString::split(const char *delim) const
 {
-    MyString clone = MyString(_str);
-    std::vector<MyString> *ret = new std::vector<MyString>;
+    MyString clone = _str;
+    auto *ret = new std::vector<MyString>;
     
     char *posBegin = _str, *posEnd;
     
@@ -581,7 +581,7 @@ float MyString::toFloat() const
  */
 MyString& MyString::toUpper() const
 {
-    MyString *newstr = new MyString(_str);
+    auto *newstr = new MyString(_str);
     
     char *s = newstr->_str;
     
@@ -598,7 +598,7 @@ MyString& MyString::toUpper() const
  */
 MyString& MyString::toLower() const
 {
-    MyString *newstr = new MyString(_str);
+    auto *newstr = new MyString(_str);
     
     char *s = newstr->_str;
     

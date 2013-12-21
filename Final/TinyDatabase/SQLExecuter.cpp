@@ -13,34 +13,6 @@ SQLExecuter::SQLExecuter()
     
 }
 
-// For performance consideration: separate different comparer
-int _sort_col = -1;
-
-bool sort_float_col_asc(const SQLTableRow& r1, const SQLTableRow& r2);
-bool sort_string_col_asc(const SQLTableRow& r1, const SQLTableRow& r2);
-bool sort_float_col_desc(const SQLTableRow& r1, const SQLTableRow& r2);
-bool sort_string_col_desc(const SQLTableRow& r1, const SQLTableRow& r2);
-
-bool sort_float_col_asc(const SQLTableRow& r1, const SQLTableRow& r2)
-{
-    return (r1.cols[_sort_col]._v_f < r2.cols[_sort_col]._v_f);
-}
-
-bool sort_string_col_asc(const SQLTableRow& r1, const SQLTableRow& r2)
-{
-    return (r1.cols[_sort_col]._v_s < r2.cols[_sort_col]._v_s);
-}
-
-bool sort_float_col_desc(const SQLTableRow& r1, const SQLTableRow& r2)
-{
-    return (r1.cols[_sort_col]._v_f > r2.cols[_sort_col]._v_f);
-}
-
-bool sort_string_col_desc(const SQLTableRow& r1, const SQLTableRow& r2)
-{
-    return (r1.cols[_sort_col]._v_s > r2.cols[_sort_col]._v_s);
-}
-
 SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
 {
     MyTimer timer;
@@ -67,8 +39,8 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             _storage.createTable(tableName);
             
             // create columns
-            for (std::vector<const SQLCreateTableColumnObject>::iterator it = query._create_table_columns.begin(); it != query._create_table_columns.end(); ++it) {
-                const SQLCreateTableColumnObject &_col = *it;
+            for (auto it = query._create_table_columns.begin(); it != query._create_table_columns.end(); ++it) {
+                auto &_col = *it;
                 bool result;
                 result = _storage[tableName].createColumn(_col.name, _col.type, _col.size, _col.can_null);
                 
@@ -106,7 +78,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             // delete rows
             if (has_condition) {
-                for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ) {
+                for (auto it = table.rows.begin(); it != table.rows.end(); ) {
                     if (condition.test((*it))) {
                         it = table.rows.erase(it);
                         affected_rows++;
@@ -153,11 +125,11 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             // 补充COLUMN TYPES
             std::vector<int> filter_types;
             if (filter.wild) {
-                for (std::vector<SQLTableHeaderColumn>::iterator it = table.head.begin(); it != table.head.end(); ++it) {
+                for (auto it = table.head.begin(); it != table.head.end(); ++it) {
                     filter_types.push_back((*it).type);
                 }
             } else {
-                for (std::set<int>::iterator it = filter.columns.begin(); it != filter.columns.end(); ++it) {
+                for (auto it = filter.columns.begin(); it != filter.columns.end(); ++it) {
                     filter_types.push_back(table.head[(*it)].type);
                 }
             }
@@ -194,8 +166,8 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             std::list<SQLTableRow> result;
             
             if (has_condition) {
-                for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
-                    SQLTableRow &_row = *it;
+                for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    auto &_row = *it;
                     if (condition.test(_row)) {
                         result.push_back(_row);
                     }
@@ -206,22 +178,29 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             // begin sorting
             if (order_col > -1) {
-                _sort_col = order_col;
                 if (order_order == SQLConstants::ORDER_ASC) {
                     if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        result.sort(sort_float_col_asc);
-                        //std::sort(result.begin(), result.end(), sort_float_col_asc);
+                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                        {
+                            return (r1.cols[order_col]._v_f < r2.cols[order_col]._v_f);
+                        });
                     } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        result.sort(sort_string_col_asc);
-                        //std::sort(result.begin(), result.end(), sort_string_col_asc);
+                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                        {
+                            return (r1.cols[order_col]._v_s < r2.cols[order_col]._v_s);
+                        });
                     }
                 } else if (order_order == SQLConstants::ORDER_DESC) {
                     if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        result.sort(sort_float_col_desc);
-                        //std::sort(result.begin(), result.end(), sort_float_col_desc);
+                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                        {
+                            return (r1.cols[order_col]._v_f > r2.cols[order_col]._v_f);
+                        });
                     } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        result.sort(sort_string_col_desc);
-                        //std::sort(result.begin(), result.end(), sort_string_col_desc);
+                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                        {
+                            return (r1.cols[order_col]._v_s > r2.cols[order_col]._v_s);
+                        });
                     }
                 }
             }
@@ -229,7 +208,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             // filter and top
             std::list<SQLTableRow> result_final;
             
-            for (std::list<SQLTableRow>::iterator it = result.begin(); it != result.end(); ++it) {
+            for (auto it = result.begin(); it != result.end(); ++it) {
                 result_final.push_back(filter.filter((*it)));
                 if (--top_limit == 0) {
                     break;
@@ -285,7 +264,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             std::list<SQLTableRow> result;
             std::vector<int> filter_types;
             
-            for (std::vector<SQLTableHeaderColumn>::iterator it = table.head.begin(); it != table.head.end(); ++it) {
+            for (auto it = table.head.begin(); it != table.head.end(); ++it) {
                 filter_types.push_back((*it).type);
             }
             
@@ -295,8 +274,8 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             
             if (has_condition) {
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        SQLTableRow &_row = *it;
+                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
+                        auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_f = set_col_v_f;
                             result.push_back(_row);
@@ -304,8 +283,8 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                         }
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        SQLTableRow &_row = *it;
+                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
+                        auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_s = set_col_v_s;
                             result.push_back(_row);
@@ -315,13 +294,13 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 }
             } else {
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_f = set_col_v_f;
                         result.push_back((*it));
                         affected_rows++;
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    for (std::list<SQLTableRow>::iterator it = table.rows.begin(); it != table.rows.end(); ++it) {
+                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_s = set_col_v_s;
                         result.push_back((*it));
                         affected_rows++;
