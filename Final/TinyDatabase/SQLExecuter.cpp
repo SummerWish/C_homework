@@ -353,6 +353,8 @@ void SQLExecuter::xport(const MyString& table, const MyString& filepath)
 
 void SQLExecuter::xport(const MyString& table, const char *filepath)
 {
-    std::ofstream fout = std::ofstream(filepath);
+    std::ofstream fout;
+    fout.open(filepath);
     _storage[table].print(fout);
+    fout.close();
 }
