@@ -243,6 +243,7 @@ public:
     
 };
 
+int my_memcmp(const void *s1, const void *s2, int n);
 char *my_strcat(char *dest, const char *src);
 char *my_strcpy(char *dest, const char *src);
 char *my_strchr(const char *s, char c);

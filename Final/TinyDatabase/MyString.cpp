@@ -9,6 +9,23 @@
 #include "MyString.h"
 
 /*
+ 比较两个内存
+ */
+int my_memcmp(const void *s1, const void *s2, int n)
+{
+    unsigned char *p1 = (unsigned char *) s1;
+    unsigned char *p2 = (unsigned char *) s2;
+    
+    int v = 0;
+    
+    while (n-- > 0 && v == 0) {
+        v = *(p1++) - *(p2++);
+    }
+    
+    return v;
+}
+
+/*
  将src追加到dest末尾
  返回追加后的dest字符串
  */
@@ -95,7 +112,7 @@ char *my_strstr(const char *s1, const char *s2)
     int n = my_strlen(s2);
     
     while (*s1 != '\0') {
-        if (!memcmp(s1++, s2, n)) {
+        if (!my_memcmp(s1++, s2, n)) {
             return (char *)s1 - 1;
         }
     }
