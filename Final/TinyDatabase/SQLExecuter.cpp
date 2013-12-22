@@ -333,8 +333,10 @@ SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath
         return *new SQLResultObject(MyString("Table [").concat(table_).concat("] not exists"));
     }
     
-    std::ifstream fin = std::ifstream(filepath);
+    std::ifstream fin;
+    fin.open(filepath);
     int n = _storage[table_].import(fin);
+    fin.close();
     
     return *new SQLResultObject(timer.elapsed(), table_, n);
 }
