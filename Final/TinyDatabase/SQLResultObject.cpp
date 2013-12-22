@@ -67,6 +67,8 @@ void SQLResultObject::xport(const MyString& filepath)
 
 void SQLResultObject::xport(const char *filepath)
 {
-    auto fout = std::ofstream(filepath);
+    std::ofstream fout;
+    fout.open(filepath);
     print(fout);
+    fout.close();
 }

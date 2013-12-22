@@ -16,7 +16,7 @@
 #include "MyString.h"
 #include "SQL.h"
 
-#define APP_VERSION "0.0.1.20131221.200800"
+#define APP_VERSION "0.0.1.20131222.142400"
 
 int database_handler_create_table(std::vector<MyString> params);
 int database_handler_import(std::vector<MyString> params);
