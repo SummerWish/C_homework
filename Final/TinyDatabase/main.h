@@ -38,7 +38,7 @@ char *_read(const char *filename)
     int fsize = 0;
     FILE *f;
     
-    f = fopen(filename, "r");
+    f = fopen(filename, "rb");
     
     if (f) {
         // get FILE_SIZE

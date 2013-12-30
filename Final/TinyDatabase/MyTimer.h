@@ -36,7 +36,7 @@ private:
         li.LowPart = ft.dwLowDateTime;
         li.HighPart = ft.dwHighDateTime;
         
-        uint64 ret = li.QuadPart;
+        uint64_t ret = li.QuadPart;
         ret -= 116444736000000000LL; /* Convert from file time to UNIX epoch time. */
         ret /= 10000; /* From 100 nano seconds (10^-7) to 1 millisecond (10^-3) intervals */
         
