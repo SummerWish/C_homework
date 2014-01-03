@@ -66,20 +66,23 @@ public:
     //void _print() const;
     
     /*
-     将 COLUMN_NAME 转换为 index，并转换为后缀表达式
+     检查条件是否有效
      */
     bool checkCondition(const SQLTable& table) const;
+    /*
+     将 COLUMN_NAME 转换为 index，并转换为后缀表达式
+     */
     CompiledSQLConditionObject& compileCondition(const SQLTable& table) const;
     
     /*
-     去除重复的 COLUMN_NAME，并将 COLUMN_NAME 转换为 index
+     检查过滤列是否有效
      */
     bool checkFilter(const SQLTable& table) const;
+    /*
+     去除重复的 COLUMN_NAME，并将 COLUMN_NAME 转换为 index
+     */
     CompiledSQLFilterObject& compileFilter(const SQLTable& table) const;
     
 };
-
-bool isOperator(CompiledSQLConditionComponentObject t);
-int getPriority(CompiledSQLConditionComponentObject t);
 
 #endif

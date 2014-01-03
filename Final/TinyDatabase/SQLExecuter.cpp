@@ -8,11 +8,9 @@
 
 #include "SQLExecuter.h"
 
-SQLExecuter::SQLExecuter()
-{
-    
-}
-
+/*
+ 执行单一SQL语句
+ */
 SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
 {
     MyTimer timer;
@@ -317,6 +315,9 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
     return *new SQLResultObject(MyString("Unknown operation"));
 }
 
+/*
+ 从文件导入数据
+ */
 SQLResultObject& SQLExecuter::import(const char *table, const char *filepath)
 {
     return import(MyString(table), filepath);
@@ -341,6 +342,9 @@ SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath
     return *new SQLResultObject(timer.elapsed(), table_, n);
 }
 
+/*
+ 导出数据到文件
+ */
 void SQLExecuter::xport(const char *table, const char *filepath)
 {
     xport(MyString(table), filepath);

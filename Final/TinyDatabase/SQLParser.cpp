@@ -8,10 +8,12 @@
 
 #include "SQLParser.h"
 
+/*
+ 解析一行SQL语句，转换为SQLQueryObject
+ */
 SQLQueryObject& SQLParser::parseLine(const char *line)
 {
-    MyString _line(line);
-    return parseLine(_line);
+    return parseLine(MyString(line));
 }
 
 SQLQueryObject& SQLParser::parseLine(const MyString& line)

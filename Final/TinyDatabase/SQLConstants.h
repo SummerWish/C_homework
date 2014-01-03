@@ -74,6 +74,9 @@ public:
         WHERE_STATEMENT_NE          = 506, // a != b
     };
     
+    /*
+     常量转换为字符串，DEBUG用途
+     */
     char *_constToString(int constant) const
     {
         switch (constant)

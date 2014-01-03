@@ -23,6 +23,9 @@ class MyTimer
 {
 private:
     
+    /*
+     获取当前毫秒级时间戳
+     */
     int64_t getTimestampMS()
     {
 #ifdef WIN32
@@ -66,6 +69,9 @@ public:
         start = getTimestampMS();
     }
     
+    /*
+     计算从构造类开始流逝的时间（ms）
+     */
     long elapsed()
     {
         return getTimestampMS() - start;

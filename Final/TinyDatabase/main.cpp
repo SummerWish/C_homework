@@ -11,6 +11,9 @@
 MyConsole console;
 SQL sql;
 
+/*
+ entry
+ */
 int main(int argc, const char * argv[])
 {
     // Attach handlers
@@ -37,10 +40,10 @@ int database_handler_interactive_mode(std::vector<MyString> params)
 {
     MyString line;
     
+    char input[1024];
+    
     do {
         std::cout << "interactive> ";
-        
-        char input[1024];
         std::cin.getline(input, 1024);
         line = MyString(input);
         

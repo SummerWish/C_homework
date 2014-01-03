@@ -32,6 +32,9 @@ char *_read(const char *filename);
 MyString read(const MyString& filename);
 MyString read(const char *filename);
 
+/*
+ 从文件中读取所有内容
+ */
 char *_read(const char *filename)
 {
     char *content = new char[1];
@@ -58,7 +61,6 @@ char *_read(const char *filename)
     
     return content;
 }
-
 MyString read(const MyString& filename)
 {
     char *fp = filename.toCString();
@@ -68,7 +70,6 @@ MyString read(const MyString& filename)
     
     return val;
 }
-
 MyString read(const char *filename)
 {
     char *content;

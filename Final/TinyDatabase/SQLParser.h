@@ -25,6 +25,9 @@ public:
         PARSE_STATUS_DELIM          = 1
     };
     
+    /*
+     解析一行SQL语句，转换为SQLQueryObject
+     */
     SQLQueryObject& parseLine(const char *line);
     SQLQueryObject& parseLine(const MyString& line);
 };

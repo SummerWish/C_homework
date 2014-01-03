@@ -19,6 +19,9 @@ public:
     bool wild;
     std::set<int> columns;
     
+    /*
+     给定一个数据行，返回其中某些列
+     */
     SQLTableRow& filter(SQLTableRow& row) const
     {
         if (wild) {
@@ -26,6 +29,7 @@ public:
         }
         
         auto *ret = new SQLTableRow();
+        ret->cols.reserve(columns.size());
         
         for (auto it = columns.begin(); it != columns.end(); ++it) {
             ret->cols.push_back(row.cols[(*it)]);

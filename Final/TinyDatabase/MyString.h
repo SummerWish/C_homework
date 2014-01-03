@@ -252,7 +252,7 @@ int my_strcmp(const char *p1, const char *p2);
 char *my_strstr(const char *s1, const char *s2);
 
 /*
- highly optimized string split
+ 高效率的字符串分割实现
  */
 std::vector<MyString>& my_split(const char *str, const char *delim);
 

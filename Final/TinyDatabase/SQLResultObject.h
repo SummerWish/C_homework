@@ -50,12 +50,12 @@ public:
     SQLResultObject(long time, const MyString& affect_table, const std::list<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
     
     /*
-     输出结果
+     输出结果到流
      */
     void print(std::ostream& s) const;
     
     /*
-     导出结果
+     输出结果到文件
      */
     void xport(const MyString& filepath) const;
     void xport(const char *filepath) const;

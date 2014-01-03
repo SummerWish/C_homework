@@ -29,10 +29,21 @@ public:
     
     SQL();
     
+    /*
+     执行一行SQL语句
+     */
     SQLResultObject& execute(const char *sql);
     SQLResultObject& execute(const MyString& sql);
+    
+    /*
+     从文件导入数据到数据表
+     */
     SQLResultObject& import(const char *table, const char *filepath);
     SQLResultObject& import(const MyString& table, const char *filepath);
+    
+    /*
+     导出数据表数据到文件
+     */
     void xport(const char *table, const char *filepath);
     void xport(const MyString& table, const MyString& filepath);
     void xport(const MyString& table, const char *filepath);

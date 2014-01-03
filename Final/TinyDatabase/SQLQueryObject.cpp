@@ -140,19 +140,6 @@ void SQLQueryObject::_print() const
 }
 */
 
-bool SQLQueryObject::checkCondition(const SQLTable& table) const
-{
-    for (int i = 0; i < _where_statements.size(); ++i) {
-        if (_where_statements[i].type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
-            if (table.getColumnIndexByName(_where_statements[i].statement.name) == -1) {
-                return false;
-            }
-        }
-    }
-    
-    return true;
-}
-
 bool isOperator(CompiledSQLConditionComponentObject t)
 {
     if (t.type == SQLConstants::WHERE_COMPONENT_AND || t.type == SQLConstants::WHERE_COMPONENT_OR) {
@@ -171,6 +158,22 @@ int getPriority(CompiledSQLConditionComponentObject t)
     } else {
         return 0;
     }
+}
+
+/*
+ 检查条件是否有效
+ */
+bool SQLQueryObject::checkCondition(const SQLTable& table) const
+{
+    for (int i = 0; i < _where_statements.size(); ++i) {
+        if (_where_statements[i].type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
+            if (table.getColumnIndexByName(_where_statements[i].statement.name) == -1) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }
 
 /*
@@ -237,6 +240,9 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
     return *ret;
 }
 
+/*
+ 检查过滤列是否有效
+ */
 bool SQLQueryObject::checkFilter(const SQLTable& table) const
 {
     bool has_wildcard = false;

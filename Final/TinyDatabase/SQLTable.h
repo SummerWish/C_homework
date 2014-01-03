@@ -27,6 +27,10 @@ public:
     std::vector<SQLTableHeader> head;
     std::list<SQLTableRow> rows;
     
+    /*
+     给定列名，返回列下标
+     若没有这个列，则返回-1
+     */
     int getColumnIndexByName(const MyString& name) const
     {
         auto it = _headMapping.find(name.toUpper());
@@ -38,6 +42,9 @@ public:
         }
     }
     
+    /*
+     添加一列
+     */
     bool createColumn(const MyString& name, int type)
     {
         MyString _name = name.toUpper();
@@ -71,6 +78,9 @@ public:
         }
     }
     
+    /*
+     从文件导入数据
+     */
     int import(std::istream& s)
     {
         char tmp[4096];

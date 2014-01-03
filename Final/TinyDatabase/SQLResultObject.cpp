@@ -42,6 +42,9 @@ SQLResultObject::SQLResultObject(long time,
     rows = _rows;
 }
 
+/*
+ 输出结果到流
+ */
 void SQLResultObject::print(std::ostream& s) const
 {
     s << std::left;
@@ -60,6 +63,9 @@ void SQLResultObject::print(std::ostream& s) const
     }
 }
 
+/*
+ 输出结果到文件
+ */
 void SQLResultObject::xport(const MyString& filepath) const
 {
     char *fp = filepath.toCString();

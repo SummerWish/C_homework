@@ -32,12 +32,13 @@ public:
 
 class CompiledSQLConditionObject
 {
-public:
-    std::vector<CompiledSQLConditionComponentObject> condition_components;
-    
-    bool calcStatement(const SQLTableRow& row, const CompiledSQLConditionStatementObject& statement) const
+private:
+    /*
+     给定数据行和单一条件元素，计算数据行是否符合条件
+     */
+    bool testStatement(const SQLTableRow& row, const CompiledSQLConditionStatementObject& statement) const
     {
-        auto col = row.cols[statement.rowIndex];
+        auto &col = row.cols[statement.rowIndex];
         
         if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
             
@@ -85,6 +86,12 @@ public:
         return false;
     }
     
+public:
+    std::vector<CompiledSQLConditionComponentObject> condition_components;
+    
+    /*
+     给定数据行，计算该行是否满足条件
+     */
     bool test(const SQLTableRow& row) const
     {
         std::stack<bool> result;
@@ -111,7 +118,7 @@ public:
                 }
                 default: //WHERE_COMPONENT_STATEMENT
                 {
-                    result.push(calcStatement(row, (*it).statement));
+                    result.push(testStatement(row, (*it).statement));
                     break;
                 }
             }
