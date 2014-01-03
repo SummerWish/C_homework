@@ -604,7 +604,7 @@ MyString& MyString::toUpper() const
     
     for (; *s; s++) {
         if (('a' <= *s) && (*s <= 'z'))
-            *s = 'A' + (*s - 'a');
+            *s &= ~32; //*s = 'A' + (*s - 'a');
     }
     
     return *newstr;
@@ -621,7 +621,7 @@ MyString& MyString::toLower() const
     
     for (; *s; s++) {
         if (('A' <= *s) && (*s <= 'Z'))
-            *s = 'a' + (*s - 'A');
+            *s |= 32; //* s = 'a' + (*s - 'A');
     }
     
     return *newstr;
