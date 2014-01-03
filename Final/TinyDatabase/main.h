@@ -62,6 +62,7 @@ char *_read(const char *filename)
 MyString read(const MyString& filename)
 {
     char *fp = filename.toCString();
+    
     MyString val = read(fp);
     delete[] fp;
     
@@ -73,7 +74,10 @@ MyString read(const char *filename)
     char *content;
     content = _read(filename);
     
-    return MyString(content);
+    MyString val(content);
+    delete[] content;
+    
+    return val;
 }
 
 #endif
