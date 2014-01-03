@@ -52,13 +52,13 @@ public:
     /*
      输出结果
      */
-    void print(std::ostream& s);
+    void print(std::ostream& s) const;
     
     /*
      导出结果
      */
-    void xport(const MyString& filepath);
-    void xport(const char *filepath);
+    void xport(const MyString& filepath) const;
+    void xport(const char *filepath) const;
 };
 
 #endif /* defined(___352978__SQLResultObject__) */

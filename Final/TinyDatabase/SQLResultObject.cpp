@@ -42,7 +42,7 @@ SQLResultObject::SQLResultObject(long time,
     rows = _rows;
 }
 
-void SQLResultObject::print(std::ostream& s)
+void SQLResultObject::print(std::ostream& s) const
 {
     s << std::left;
     
@@ -60,12 +60,14 @@ void SQLResultObject::print(std::ostream& s)
     }
 }
 
-void SQLResultObject::xport(const MyString& filepath)
+void SQLResultObject::xport(const MyString& filepath) const
 {
-    xport(filepath.toCString());
+    char *fp = filepath.toCString();
+    xport(fp);
+    delete[] fp;
 }
 
-void SQLResultObject::xport(const char *filepath)
+void SQLResultObject::xport(const char *filepath) const
 {
     std::ofstream fout;
     fout.open(filepath);

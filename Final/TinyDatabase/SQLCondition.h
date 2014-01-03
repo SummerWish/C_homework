@@ -35,7 +35,7 @@ class CompiledSQLConditionObject
 public:
     std::vector<CompiledSQLConditionComponentObject> condition_components;
     
-    bool calcStatement(const SQLTableRow& row, const CompiledSQLConditionStatementObject& statement)
+    bool calcStatement(const SQLTableRow& row, const CompiledSQLConditionStatementObject& statement) const
     {
         auto col = row.cols[statement.rowIndex];
         
@@ -72,7 +72,7 @@ public:
                 case SQLConstants::WHERE_STATEMENT_GTE:
                     return col._v_f >= _v;
                 case SQLConstants::WHERE_STATEMENT_LIKE:
-                    return (MyString(col._v_f).indexOf(_v) > -1);
+                    return (MyString(col._v_f).indexOf(MyString(_v)) > -1);
                 case SQLConstants::WHERE_STATEMENT_LT:
                     return col._v_f < _v;
                 case SQLConstants::WHERE_STATEMENT_LTE:
@@ -85,7 +85,7 @@ public:
         return false;
     }
     
-    bool test(const SQLTableRow& row)
+    bool test(const SQLTableRow& row) const
     {
         std::stack<bool> result;
         
