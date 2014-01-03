@@ -61,7 +61,7 @@ int database_handler_interactive_mode(std::vector<MyString> params)
                 
             } catch (MyString err) {
                 
-                std::cout << "Error: " << err << std::endl;
+                std::cerr << "Error: " << err << std::endl;
                 
             }
             
@@ -78,13 +78,17 @@ int database_handler_create_table(std::vector<MyString> params)
 {
     try {
         
+        if (params.size() != 1) {
+            throw MyString("Expecting 1 parameter");
+        }
+        
         auto result = sql.execute(read(params[0]));
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         return MyConsole::STATUS_OK;
         
     } catch (MyString err) {
         
-        std::cout << "Error: " << err << std::endl;
+        std::cerr << "Error: " << err << std::endl;
         return MyConsole::STATUS_FAIL;
         
     }
@@ -97,8 +101,8 @@ int database_handler_import(std::vector<MyString> params)
 {
     try {
         
-        if (params.size() == 1) {
-            throw MyString("2 parameters expected, only 1 received.");
+        if (params.size() != 2) {
+            throw MyString("Expecting 2 parameters");
         }
         
         char *fp = params[1].toCString();
@@ -112,7 +116,7 @@ int database_handler_import(std::vector<MyString> params)
         
     } catch (MyString err) {
         
-        std::cout << "Error: " << err << std::endl;
+        std::cerr << "Error: " << err << std::endl;
         return MyConsole::STATUS_FAIL;
         
     }
@@ -124,6 +128,10 @@ int database_handler_import(std::vector<MyString> params)
 int database_handler_select(std::vector<MyString> params)
 {
     try {
+        
+        if (params.size() != 1) {
+            throw MyString("Expecting 1 parameter");
+        }
         
         static int execute_n;
         auto result = sql.execute(read(params[0]));
@@ -137,7 +145,7 @@ int database_handler_select(std::vector<MyString> params)
         
     } catch (MyString err) {
         
-        std::cout << "Error: " << err << std::endl;
+        std::cerr << "Error: " << err << std::endl;
         return MyConsole::STATUS_FAIL;
         
     }
@@ -149,6 +157,10 @@ int database_handler_select(std::vector<MyString> params)
 int database_handler_update(std::vector<MyString> params)
 {
     try {
+        
+        if (params.size() != 1) {
+            throw MyString("Expecting 1 parameter");
+        }
         
         static int execute_n;
         auto result = sql.execute(read(params[0]));
@@ -162,7 +174,7 @@ int database_handler_update(std::vector<MyString> params)
         
     } catch (MyString err) {
         
-        std::cout << "Error: " << err << std::endl;
+        std::cerr << "Error: " << err << std::endl;
         return MyConsole::STATUS_FAIL;
         
     }
@@ -174,6 +186,10 @@ int database_handler_update(std::vector<MyString> params)
 int database_handler_delete(std::vector<MyString> params)
 {
     try {
+        
+        if (params.size() != 1) {
+            throw MyString("Expecting 1 parameter");
+        }
         
         static int execute_n;
         auto result = sql.execute(read(params[0]));
@@ -187,7 +203,7 @@ int database_handler_delete(std::vector<MyString> params)
         
     } catch (MyString err) {
         
-        std::cout << "Error: " << err << std::endl;
+        std::cerr << "Error: " << err << std::endl;
         return MyConsole::STATUS_FAIL;
         
     }
