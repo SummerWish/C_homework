@@ -70,7 +70,7 @@ public:
     /*
      输出结果到流
      */
-    void print(std::ostream& s) const
+    int print(std::ostream& s) const
     {
         s << std::left;
         
@@ -99,28 +99,32 @@ public:
             
             s << std::endl;
         }
+        
+        return (int)rows.size();
     }
     
     /*
      输出结果到文件
      */
-    void xport(const MyString& filepath) const
+    int xport(const MyString& filepath) const
     {
         char *fp = filepath.toCString();
-        xport(fp);
+        int n = xport(fp);
         delete[] fp;
+        return n;
     }
     
-    void xport(const char *filepath) const
+    int xport(const char *filepath) const
     {
         std::ofstream fout;
         fout.open(filepath);
-        print(fout);
+        int n = print(fout);
         fout.close();
+        return n;
     }
     
     /*
-     从文件导入数据
+     从流中导入数据
      */
     int import(std::istream& s)
     {
@@ -155,6 +159,20 @@ public:
         
         return affected_rows;
     }
+    
+    /*
+     从文件导入数据
+     */
+    int import(const char *filepath)
+    {
+        std::ifstream fin;
+        fin.open(filepath);
+        int n = import(fin);
+        fin.close();
+        
+        return n;
+    }
+
 };
 
 #endif /* defined(___352978__SQLTable__) */

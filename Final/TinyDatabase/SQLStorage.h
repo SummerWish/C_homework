@@ -21,16 +21,12 @@ private:
 
 public:
     
-    SQLStorage()
-    {
-    }
-    
-    bool tableExists(const char *table)
+    bool tableExists(const char *table) const
     {
         return tableExists(MyString(table));
     }
     
-    bool tableExists(const MyString& table)
+    bool tableExists(const MyString& table) const
     {
         if (_tables.find(table.toUpper()) == _tables.end()) {
             return false;

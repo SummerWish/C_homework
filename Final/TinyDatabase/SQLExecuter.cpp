@@ -326,16 +326,12 @@ SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath
     MyTimer timer;
     
     MyString table_ = table.toUpper();
-    
     bool exists = _storage.tableExists(table_);
     if (!exists) {
         return *new SQLResultObject(MyString("Table [").concat(table_).concat("] not exists"));
     }
     
-    std::ifstream fin;
-    fin.open(filepath);
-    int n = _storage[table_].import(fin);
-    fin.close();
+    int n = _storage[table_].import(filepath);
     
     return *new SQLResultObject(timer.elapsed(), table_, n);
 }
@@ -343,17 +339,37 @@ SQLResultObject& SQLExecuter::import(const MyString& table, const char *filepath
 /*
  导出数据到文件
  */
-void SQLExecuter::xport(const char *table, const char *filepath)
+SQLResultObject& SQLExecuter::xport(const char *table, const char *filepath)
 {
-    xport(MyString(table), filepath);
+    return xport(MyString(table), filepath);
 }
 
-void SQLExecuter::xport(const MyString& table, const MyString& filepath)
+SQLResultObject& SQLExecuter::xport(const MyString& table, const MyString& filepath)
 {
-    _storage[table].xport(filepath);
+    MyTimer timer;
+    
+    MyString table_ = table.toUpper();
+    bool exists = _storage.tableExists(table_);
+    if (!exists) {
+        return *new SQLResultObject(MyString("Table [").concat(table_).concat("] not exists"));
+    }
+    
+    int n = _storage[table_].xport(filepath);
+    
+    return *new SQLResultObject(timer.elapsed(), table_, n);
 }
 
-void SQLExecuter::xport(const MyString& table, const char *filepath)
+SQLResultObject& SQLExecuter::xport(const MyString& table, const char *filepath)
 {
-    _storage[table].xport(filepath);
+    MyTimer timer;
+    
+    MyString table_ = table.toUpper();
+    bool exists = _storage.tableExists(table_);
+    if (!exists) {
+        return *new SQLResultObject(MyString("Table [").concat(table_).concat("] not exists"));
+    }
+    
+    int n = _storage[table_].xport(filepath);
+    
+    return *new SQLResultObject(timer.elapsed(), table_, n);
 }

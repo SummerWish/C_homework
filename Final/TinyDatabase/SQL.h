@@ -40,9 +40,9 @@ public:
     /*
      导出数据表数据到文件
      */
-    void xport(const char *table, const char *filepath);
-    void xport(const MyString& table, const MyString& filepath);
-    void xport(const MyString& table, const char *filepath);
+    SQLResultObject& xport(const char *table, const char *filepath);
+    SQLResultObject& xport(const MyString& table, const MyString& filepath);
+    SQLResultObject& xport(const MyString& table, const char *filepath);
 };
 
 #endif /* defined(___352978__SQL__) */
