@@ -280,49 +280,6 @@ MyString& MyString::operator=(const MyString& str)
  字符串连接
  
  eg:
- MyString a;
- a = a + 'h';
- */
-MyString& MyString::concat(char ch) const
-{
-    auto *newstr = new MyString();
-    
-    int len = length();
-    
-    delete[] newstr->_str;
-    newstr->_str = new char[len + 2];
-    
-    my_strcpy(newstr->_str, _str);
-    newstr->_str[len] = ch;
-    newstr->_str[len + 1] = '\0';
-    
-    return *newstr;
-}
-
-/*
- 字符串连接
- 
- eg:
- MyString a;
- a = a + "hello";
- */
-MyString& MyString::concat(const char *str) const
-{
-    auto *newstr = new MyString();
-    
-    delete[] newstr->_str;
-    newstr->_str = new char[length() + my_strlen(str) + 1];
-    
-    my_strcpy(newstr->_str, _str);
-    my_strcat(newstr->_str, str);
-    
-    return *newstr;
-}
-
-/*
- 字符串连接
- 
- eg:
  MyString a, b, c;
  c = a + b;
  */
@@ -337,6 +294,54 @@ MyString& MyString::concat(const MyString& str) const
     my_strcat(newstr->_str, str._str);
     
     return *newstr;
+}
+
+/*
+ 字符串连接
+ 
+ eg:
+ MyString a;
+ a = a + 'h';
+ */
+MyString& MyString::concat(char ch) const
+{
+    return concat(MyString(ch));
+}
+
+/*
+ 字符串连接
+ 
+ eg:
+ MyString a;
+ a = a + "hello";
+ */
+MyString& MyString::concat(const char *str) const
+{
+    return concat(MyString(str));
+}
+
+/*
+ 字符串连接
+ 
+ eg:
+ MyString a;
+ c = a + 1;
+ */
+MyString& MyString::concat(int v) const
+{
+    return concat(MyString(v));
+}
+
+/*
+ 字符串连接
+ 
+ eg:
+ MyString a;
+ c = a + 1.1;
+ */
+MyString& MyString::concat(float v) const
+{
+    return concat(MyString(v));
 }
 
 

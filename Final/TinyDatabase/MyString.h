@@ -101,6 +101,15 @@ public:
      字符串连接
      
      eg:
+     MyString a, b, c;
+     c = a + b;
+     */
+    MyString& concat(const MyString& str) const;
+    
+    /*
+     字符串连接
+     
+     eg:
      MyString a;
      a = a + 'h';
      */
@@ -119,10 +128,19 @@ public:
      字符串连接
      
      eg:
-     MyString a, b, c;
-     c = a + b;
+     MyString a;
+     c = a + 1;
      */
-    MyString& concat(const MyString& str) const;
+    MyString& concat(int v) const;
+    
+    /*
+     字符串连接
+     
+     eg:
+     MyString a;
+     c = a + 1.1;
+     */
+    MyString& concat(float v) const;
     
     /*
      字符串连接
