@@ -17,12 +17,6 @@ class SQLTableRow
 {
 public:
     std::vector<SQLTableCell> cols;
-    
-    SQLTableRow()
-    {
-        cols.reserve(10);
-        //TODO
-    }
 };
 
 #endif

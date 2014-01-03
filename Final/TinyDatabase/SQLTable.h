@@ -95,6 +95,7 @@ public:
             
             affected_rows++;
             SQLTableRow row;
+            row.cols.reserve(head.size());
             
             for (int i = 0; i < cols.size(); ++i) {
                 SQLTableCell col;
