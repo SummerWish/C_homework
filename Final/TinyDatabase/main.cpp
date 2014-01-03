@@ -84,7 +84,10 @@ int database_handler_create_table(std::vector<MyString> params)
  */
 int database_handler_import(std::vector<MyString> params)
 {
-    auto result = sql.import(params[0], params[1].toCString());
+    char *fp = params[1].toCString();
+    auto result = sql.import(params[0], fp);
+    delete[] fp;
+    
     if (!result.ok) {
         std::cout << "Error: " << result.err << std::endl;
         return MyConsole::STATUS_FAIL;

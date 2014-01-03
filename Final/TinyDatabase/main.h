@@ -62,7 +62,10 @@ char *_read(const char *filename)
 MyString read(const MyString& filename)
 {
     char *fp = filename.toCString();
-    return read(fp);
+    MyString val = read(fp);
+    delete[] fp;
+    
+    return val;
 }
 
 MyString read(const char *filename)
