@@ -10,7 +10,7 @@
 #define _352978_SQLFilter_h
 
 #include <set>
-#include "SQLTableColumn.h"
+#include "SQLTableCell.h"
 #include "SQLTableRow.h"
 
 class CompiledSQLFilterObject

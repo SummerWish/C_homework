@@ -11,16 +11,17 @@
 
 #include <vector>
 #include "MyString.h"
-#include "SQLTableColumn.h"
+#include "SQLTableCell.h"
 
 class SQLTableRow
 {
 public:
-    std::vector<SQLTableColumn> cols;
+    std::vector<SQLTableCell> cols;
     
     SQLTableRow()
     {
         cols.reserve(10);
+        //TODO
     }
 };
 

@@ -1,18 +1,18 @@
 //
-//  SQLTableHeaderColumn.h
+//  SQLTableHeader.h
 //  1352978
 //
 //  Created by Breezewish on 13-12-7.
 //  Copyright (c) 2013年 Breezewish. All rights reserved.
 //
 
-#ifndef _352978_SQLTableHeaderColumn_h
-#define _352978_SQLTableHeaderColumn_h
+#ifndef _352978_SQLTableHeader_h
+#define _352978_SQLTableHeader_h
 
 #include "SQLConstants.h"
 #include "MyString.h"
 
-class SQLTableHeaderColumn
+class SQLTableHeader
 {
 public:
     MyString name;
@@ -20,7 +20,13 @@ public:
     int size;
     bool can_null;
     
-    SQLTableHeaderColumn(const MyString& _name, int _type, int _size, bool _can_null)
+    SQLTableHeader(const MyString& _name, int _type)
+    {
+        name = _name.toUpper();
+        type = _type;
+    }
+    
+    SQLTableHeader(const MyString& _name, int _type, int _size, bool _can_null)
     {
         name = _name.toUpper();
         type = _type;

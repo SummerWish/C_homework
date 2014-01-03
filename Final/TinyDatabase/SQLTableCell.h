@@ -6,17 +6,16 @@
 //  Copyright (c) 2013年 Breezewish. All rights reserved.
 //
 
-#ifndef _352978_SQLTableColumn_h
-#define _352978_SQLTableColumn_h
+#ifndef _352978_SQLTableCell_h
+#define _352978_SQLTableCell_h
 
 #include "MyString.h"
 
-class SQLTableColumn
+class SQLTableCell
 {
 public:
-    int _type;
     MyString _v_s;
-    float _v_f;
+    float    _v_f;
 };
 
 #endif
