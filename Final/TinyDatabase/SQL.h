@@ -23,6 +23,7 @@ class SQL
 private:
     SQLExecuter _executer;
     SQLParser   _parser;
+    SQLStorage  _storage;
 public:
     
     /*

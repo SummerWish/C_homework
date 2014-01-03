@@ -38,7 +38,7 @@ SQLResultObject::SQLResultObject(long time,
     execute_time = time;
     ok = true;
     
-    table = records;    //TODO: avoid copying
+    table = std::move(records);    //TODO: avoid copying
     n = (int)table.rows.size();
 }
 

@@ -16,7 +16,7 @@
 #include "MyString.h"
 #include "SQL.h"
 
-#define APP_VERSION "0.0.1.20131222.142400"
+#define APP_VERSION "0.0.1.20131222.170000"
 #define OUTPUT_PREFIX "1352978_"
 
 int database_handler_create_table(std::vector<MyString> params);

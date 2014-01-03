@@ -25,29 +25,11 @@
 
 class SQLExecuter
 {
-private:
-    SQLStorage _storage;
-    //TODO: move storage to SQL
-    
 public:
-    
     /*
      执行单一SQL语句
      */
-    SQLResultObject& execute(const SQLQueryObject& query);
-    
-    /*
-     从文件导入数据
-     */
-    SQLResultObject& import(const char *table, const char *filepath);
-    SQLResultObject& import(const MyString& table, const char *filepath);
-    
-    /*
-     导出数据到文件
-     */
-    SQLResultObject& xport(const char *table, const char *filepath);
-    SQLResultObject& xport(const MyString& table, const MyString& filepath);
-    SQLResultObject& xport(const MyString& table, const char *filepath);
+    SQLResultObject& execute(SQLStorage &_storage, const SQLQueryObject& query);
 };
 
 
