@@ -36,7 +36,7 @@ SQLResultObject& SQL::import(const MyString& table, const char *filepath)
     MyString table_ = table.toUpper();
     bool exists = _storage.tableExists(table_);
     if (!exists) {
-        throw MyString("Table [").concat(table_).concat("] not exists");
+        throw MyString("Table [").concat(table_).concat("] does not exist");
     }
     
     int n = _storage[table_].import(filepath);
@@ -59,7 +59,7 @@ SQLResultObject& SQL::xport(const MyString& table, const MyString& filepath)
     MyString table_ = table.toUpper();
     bool exists = _storage.tableExists(table_);
     if (!exists) {
-        throw MyString("Table [").concat(table_).concat("] not exists");
+        throw MyString("Table [").concat(table_).concat("] does not exist");
     }
     
     int n = _storage[table_].xport(filepath);
@@ -74,7 +74,7 @@ SQLResultObject& SQL::xport(const MyString& table, const char *filepath)
     MyString table_ = table.toUpper();
     bool exists = _storage.tableExists(table_);
     if (!exists) {
-        throw MyString("Table [").concat(table_).concat("] not exists");
+        throw MyString("Table [").concat(table_).concat("] does not exist");
     }
     
     int n = _storage[table_].xport(filepath);

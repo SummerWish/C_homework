@@ -51,7 +51,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                throw MyString("Table [").concat(tableName).concat("] not exists");
+                throw MyString("Table [").concat(tableName).concat("] does not exist");
             }
             
             SQLTable &table = _storage[tableName];
@@ -91,7 +91,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                throw MyString("Table [").concat(tableName).concat("] not exists");
+                throw MyString("Table [").concat(tableName).concat("] does not exist");
             }
             
             SQLTable &table = _storage[tableName];
@@ -210,7 +210,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                throw MyString("Table [").concat(tableName).concat("] not exists");
+                throw MyString("Table [").concat(tableName).concat("] does not exist");
             }
             
             SQLTable &table = _storage[tableName];

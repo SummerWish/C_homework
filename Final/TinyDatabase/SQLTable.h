@@ -53,7 +53,7 @@ public:
         if (ret != -1) {
             return ret;
         } else {
-            throw MyString("Undefined column [").concat(name).concat("]");
+            throw MyString("Column [").concat(name).concat("] does not exist");
         }
     }
     
