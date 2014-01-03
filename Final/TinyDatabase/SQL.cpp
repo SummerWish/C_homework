@@ -8,10 +8,6 @@
 
 #include "SQL.h"
 
-SQL::SQL()
-{
-}
-
 /*
  执行一行SQL语句
  */

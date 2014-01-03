@@ -16,7 +16,7 @@
 #include <fstream>
 #include "MyString.h"
 #include "SQLConstants.h"
-#include "SQLTableRow.h"
+#include "SQLTable.h"
 
 class SQLResultObject
 {
@@ -26,8 +26,7 @@ public:
     int n;
     long execute_time;
     MyString tableName;
-    std::vector<int> colTypes;
-    std::list<SQLTableRow> rows;
+    SQLTable table;
     
     /*
      错误构造函数
@@ -47,7 +46,7 @@ public:
     /*
      返回结果集的构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table, const std::list<SQLTableRow>& _rows, const std::vector<int>& _colTypes);
+    SQLResultObject(long time, const MyString& affect_table, const SQLTable& records);
     
     /*
      输出结果到流

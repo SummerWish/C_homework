@@ -9,8 +9,6 @@
 #ifndef ___352978__SQL__
 #define ___352978__SQL__
 
-#include <iostream>
-#include <fstream>
 #include <ctime>
 #include "MyString.h"
 #include "SQLConstants.h"
@@ -24,10 +22,8 @@ class SQL
 {
 private:
     SQLExecuter _executer;
-    SQLParser _parser;
+    SQLParser   _parser;
 public:
-    
-    SQL();
     
     /*
      执行一行SQL语句

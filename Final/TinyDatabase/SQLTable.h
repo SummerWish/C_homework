@@ -10,6 +10,7 @@
 #define ___352978__SQLTable__
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 #include <list>
@@ -45,21 +46,30 @@ public:
     /*
      添加一列
      */
-    bool createColumn(const MyString& name, int type)
+    bool createColumn(const SQLTableHeader column)
     {
-        MyString _name = name.toUpper();
-        
-        if (getColumnIndexByName(_name) != -1) {
+        if (getColumnIndexByName(column.name) != -1) {
             // column exists
             return false;
         } else {
-            _headMapping[_name] = (int)head.size();
-            head.push_back(SQLTableHeader(_name, type));
-            
+            _headMapping[column.name.toUpper()] = (int)head.size();
+            head.push_back(column);
             return true;
         }
     }
     
+    bool createColumn(const MyString& name, int type)
+    {
+        if (getColumnIndexByName(name) != -1) {
+            return false;
+        } else {
+            return createColumn(SQLTableHeader(name, type));
+        }
+    }
+    
+    /*
+     输出结果到流
+     */
     void print(std::ostream& s) const
     {
         s << std::left;
@@ -76,6 +86,24 @@ public:
             
             s << std::endl;
         }
+    }
+    
+    /*
+     输出结果到文件
+     */
+    void xport(const MyString& filepath) const
+    {
+        char *fp = filepath.toCString();
+        xport(fp);
+        delete[] fp;
+    }
+    
+    void xport(const char *filepath) const
+    {
+        std::ofstream fout;
+        fout.open(filepath);
+        print(fout);
+        fout.close();
     }
     
     /*

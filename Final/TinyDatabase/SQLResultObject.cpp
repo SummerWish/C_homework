@@ -32,14 +32,14 @@ SQLResultObject::SQLResultObject(long time,
 }
 
 SQLResultObject::SQLResultObject(long time,
-                                 const MyString& affect_table, const std::list<SQLTableRow>& _rows, const std::vector<int>& _colTypes)
+                                 const MyString& affect_table, const SQLTable& records)
 {
     tableName = affect_table;
     execute_time = time;
     ok = true;
-    n = (int)_rows.size();
-    colTypes = _colTypes;
-    rows = _rows;
+    
+    table = records;    //TODO: avoid copying
+    n = (int)table.rows.size();
 }
 
 /*
@@ -47,20 +47,7 @@ SQLResultObject::SQLResultObject(long time,
  */
 void SQLResultObject::print(std::ostream& s) const
 {
-    s << std::left;
-    
-    for (auto it = rows.begin(); it != rows.end(); ++it) {
-        auto &row = *it;
-        for (int i = 0; i < row.cols.size(); ++i) {
-            if (colTypes[i] == SQLConstants::COLUMN_TYPE_CHAR) {
-                s << std::setw(15) << row.cols[i]._v_s;
-            } else {
-                s << std::setw(15) << row.cols[i]._v_f;
-            }
-        }
-        
-        s << std::endl;
-    }
+    table.print(s);
 }
 
 /*
@@ -68,15 +55,10 @@ void SQLResultObject::print(std::ostream& s) const
  */
 void SQLResultObject::xport(const MyString& filepath) const
 {
-    char *fp = filepath.toCString();
-    xport(fp);
-    delete[] fp;
+    table.xport(filepath);
 }
 
 void SQLResultObject::xport(const char *filepath) const
 {
-    std::ofstream fout;
-    fout.open(filepath);
-    print(fout);
-    fout.close();
+    table.xport(filepath);
 }

@@ -120,15 +120,16 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 return *new SQLResultObject(MyString("Invalid filtering column"));
             }
             filter = query.compileFilter(table);
-            // 补充COLUMN TYPES
-            std::vector<int> filter_types;
+            
+            // 初始化结果集
+            SQLTable result_table;
             if (filter.wild) {
                 for (auto it = table.head.begin(); it != table.head.end(); ++it) {
-                    filter_types.push_back((*it).type);
+                    result_table.createColumn(*it);
                 }
             } else {
                 for (auto it = filter.columns.begin(); it != filter.columns.end(); ++it) {
-                    filter_types.push_back(table.head[(*it)].type);
+                    result_table.createColumn(table.head[(*it)]);
                 }
             }
             
@@ -204,11 +205,9 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 }
             }
             
-            // filter and top
-            std::list<SQLTableRow> result_final;
-            
+            // filter and top, push data
             for (auto it = result.begin(); it != result.end(); ++it) {
-                result_final.push_back(filter.filter((*it)));
+                result_table.rows.push_back(filter.filter(*it));
                 if (--top_limit == 0) {
                     break;
                 }
@@ -217,7 +216,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             result.clear();
             
             // return final result
-            return *new SQLResultObject(timer.elapsed(), tableName, result_final, filter_types);
+            return *new SQLResultObject(timer.elapsed(), tableName, result_table);
             
             break;
         }
@@ -259,11 +258,10 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 set_col_v_s = query._str.find(SQLConstants::TOKEN_COLUMN_VALUE)->second;
             }
             
-            std::list<SQLTableRow> result;
-            std::vector<int> filter_types;
-            
+            // 初始化结果集
+            SQLTable result_table;
             for (auto it = table.head.begin(); it != table.head.end(); ++it) {
-                filter_types.push_back((*it).type);
+                result_table.createColumn(*it);
             }
             
             // begin updating
@@ -276,7 +274,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                         auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_f = set_col_v_f;
-                            result.push_back(_row);
+                            result_table.rows.push_back(_row);
                             affected_rows++;
                         }
                     }
@@ -285,7 +283,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                         auto &_row = *it;
                         if (condition.test(_row)) {
                             _row.cols[set_col]._v_s = set_col_v_s;
-                            result.push_back(_row);
+                            result_table.rows.push_back(_row);
                             affected_rows++;
                         }
                     }
@@ -294,19 +292,19 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_f = set_col_v_f;
-                        result.push_back((*it));
+                        result_table.rows.push_back((*it));
                         affected_rows++;
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_s = set_col_v_s;
-                        result.push_back((*it));
+                        result_table.rows.push_back((*it));
                         affected_rows++;
                     }
                 }
             }
             
-            return *new SQLResultObject(timer.elapsed(), tableName, result, filter_types);
+            return *new SQLResultObject(timer.elapsed(), tableName, result_table);
             
             break;
         }
@@ -352,15 +350,10 @@ void SQLExecuter::xport(const char *table, const char *filepath)
 
 void SQLExecuter::xport(const MyString& table, const MyString& filepath)
 {
-    char *fp = filepath.toCString();
-    xport(table, fp);
-    delete[] fp;
+    _storage[table].xport(filepath);
 }
 
 void SQLExecuter::xport(const MyString& table, const char *filepath)
 {
-    std::ofstream fout;
-    fout.open(filepath);
-    _storage[table].print(fout);
-    fout.close();
+    _storage[table].xport(filepath);
 }
