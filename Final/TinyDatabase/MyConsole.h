@@ -16,7 +16,7 @@
 #include "MyString.h"
 
 typedef std::ostream& (*manip) (std::ostream&);
-typedef int (*MyConsoleHandler)(std::vector<MyString>);
+typedef int (*MyConsoleHandler)(const std::vector<MyString>&);
 
 typedef struct
 {

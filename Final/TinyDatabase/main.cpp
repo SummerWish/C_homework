@@ -36,7 +36,7 @@ int main(int argc, const char * argv[])
 /*
  -it
  */
-int database_handler_interactive_mode(std::vector<MyString> params)
+int database_handler_interactive_mode(const std::vector<MyString>& params)
 {
     MyString line;
     
@@ -74,7 +74,7 @@ int database_handler_interactive_mode(std::vector<MyString> params)
 /*
  -c file
  */
-int database_handler_create_table(std::vector<MyString> params)
+int database_handler_create_table(const std::vector<MyString>& params)
 {
     try {
         
@@ -97,7 +97,7 @@ int database_handler_create_table(std::vector<MyString> params)
 /*
  -i table file
  */
-int database_handler_import(std::vector<MyString> params)
+int database_handler_import(const std::vector<MyString>& params)
 {
     try {
         
@@ -125,7 +125,7 @@ int database_handler_import(std::vector<MyString> params)
 /*
  -s file
  */
-int database_handler_select(std::vector<MyString> params)
+int database_handler_select(const std::vector<MyString>& params)
 {
     try {
         
@@ -154,7 +154,7 @@ int database_handler_select(std::vector<MyString> params)
 /*
  -u file
  */
-int database_handler_update(std::vector<MyString> params)
+int database_handler_update(const std::vector<MyString>& params)
 {
     try {
         
@@ -183,7 +183,7 @@ int database_handler_update(std::vector<MyString> params)
 /*
  -d file
  */
-int database_handler_delete(std::vector<MyString> params)
+int database_handler_delete(const std::vector<MyString>& params)
 {
     try {
         
@@ -212,7 +212,7 @@ int database_handler_delete(std::vector<MyString> params)
 /*
  -q
  */
-int database_handler_quit(std::vector<MyString> params)
+int database_handler_quit(const std::vector<MyString>& params)
 {
     console << "bye" << std::endl;
     return MyConsole::STATUS_EXIT;
@@ -221,7 +221,7 @@ int database_handler_quit(std::vector<MyString> params)
 /*
  -h
  */
-int database_handler_help(std::vector<MyString> params)
+int database_handler_help(const std::vector<MyString>& params)
 {
     return console.help();
 }
