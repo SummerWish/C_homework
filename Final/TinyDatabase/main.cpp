@@ -48,16 +48,23 @@ int database_handler_interactive_mode(std::vector<MyString> params)
         line = MyString(input);
         
         if (line != "exit") {
-            auto result = sql.execute(line);
-            if (!result.ok) {
-                std::cout << "Error: " << result.err << std::endl;
-            } else {
+            
+            try {
+                
+                auto result = sql.execute(line);
+                
                 std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
                 std::cout << "Affected " << result.n << " rows." << std::endl;
                 if ((*(result.table)).rows.size() > 0) {
                     result.print(std::cout);
                 }
+                
+            } catch (MyString err) {
+                
+                std::cout << "Error: " << err << std::endl;
+                
             }
+            
         }
     } while (line != "exit");
     
@@ -69,13 +76,17 @@ int database_handler_interactive_mode(std::vector<MyString> params)
  */
 int database_handler_create_table(std::vector<MyString> params)
 {
-    auto result = sql.execute(read(params[0]));
-    if (!result.ok) {
-        std::cout << "Error: " << result.err << std::endl;
-        return MyConsole::STATUS_FAIL;
-    } else {
+    try {
+        
+        auto result = sql.execute(read(params[0]));
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         return MyConsole::STATUS_OK;
+        
+    } catch (MyString err) {
+        
+        std::cout << "Error: " << err << std::endl;
+        return MyConsole::STATUS_FAIL;
+        
     }
 }
 
@@ -84,18 +95,26 @@ int database_handler_create_table(std::vector<MyString> params)
  */
 int database_handler_import(std::vector<MyString> params)
 {
-    char *fp = params[1].toCString();
-    auto result = sql.import(params[0], fp);
-    delete[] fp;
-    
-    if (!result.ok) {
-        std::cout << "Error: " << result.err << std::endl;
-        return MyConsole::STATUS_FAIL;
-    } else {
+    try {
+        
+        if (params.size() == 1) {
+            throw MyString("2 parameters expected, only 1 received.");
+        }
+        
+        char *fp = params[1].toCString();
+        auto result = sql.import(params[0], fp);
+        delete[] fp;    //TODO: resource not released here
+        
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         std::cout << "Imported " << result.n << " rows." << std::endl;
         
         return MyConsole::STATUS_OK;
+        
+    } catch (MyString err) {
+        
+        std::cout << "Error: " << err << std::endl;
+        return MyConsole::STATUS_FAIL;
+        
     }
 }
 
@@ -104,13 +123,10 @@ int database_handler_import(std::vector<MyString> params)
  */
 int database_handler_select(std::vector<MyString> params)
 {
-    static int execute_n;
-    
-    auto result = sql.execute(read(params[0]));
-    if (!result.ok) {
-        std::cout << "Error: " << result.err << std::endl;
-        return MyConsole::STATUS_FAIL;
-    } else {
+    try {
+        
+        static int execute_n;
+        auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("select_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         std::cout << "Selected " << result.n << " rows." << std::endl;
@@ -118,6 +134,12 @@ int database_handler_select(std::vector<MyString> params)
         result.xport(output);
         
         return MyConsole::STATUS_OK;
+        
+    } catch (MyString err) {
+        
+        std::cout << "Error: " << err << std::endl;
+        return MyConsole::STATUS_FAIL;
+        
     }
 }
 
@@ -126,13 +148,10 @@ int database_handler_select(std::vector<MyString> params)
  */
 int database_handler_update(std::vector<MyString> params)
 {
-    static int execute_n;
-    
-    auto result = sql.execute(read(params[0]));
-    if (!result.ok) {
-        std::cout << "Error: " << result.err << std::endl;
-        return MyConsole::STATUS_FAIL;
-    } else {
+    try {
+        
+        static int execute_n;
+        auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("update_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         std::cout << "Updated " << result.n << " rows." << std::endl;
@@ -140,6 +159,12 @@ int database_handler_update(std::vector<MyString> params)
         result.xport(output);
         
         return MyConsole::STATUS_OK;
+        
+    } catch (MyString err) {
+        
+        std::cout << "Error: " << err << std::endl;
+        return MyConsole::STATUS_FAIL;
+        
     }
 }
 
@@ -148,13 +173,10 @@ int database_handler_update(std::vector<MyString> params)
  */
 int database_handler_delete(std::vector<MyString> params)
 {
-    static int execute_n;
-    
-    auto result = sql.execute(read(params[0]));
-    if (!result.ok) {
-        std::cout << "Error: " << result.err << std::endl;
-        return MyConsole::STATUS_FAIL;
-    } else {
+    try {
+        
+        static int execute_n;
+        auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("delete_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
         std::cout << "Affected " << result.n << " rows." << std::endl;
@@ -162,6 +184,12 @@ int database_handler_delete(std::vector<MyString> params)
         sql.xport(result.tableName, output);
         
         return MyConsole::STATUS_OK;
+        
+    } catch (MyString err) {
+        
+        std::cout << "Error: " << err << std::endl;
+        return MyConsole::STATUS_FAIL;
+        
     }
 }
 

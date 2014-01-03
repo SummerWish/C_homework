@@ -16,7 +16,7 @@
 #include "MyString.h"
 #include "SQL.h"
 
-#define APP_VERSION "0.0.1.20131222.170000"
+#define APP_VERSION "0.0.1.20131222.181400"
 #define OUTPUT_PREFIX "1352978_"
 
 int database_handler_create_table(std::vector<MyString> params);
@@ -29,8 +29,8 @@ int database_handler_help(std::vector<MyString> params);
 int database_handler_quit(std::vector<MyString> params);
 
 char *_read(const char *filename);
-MyString read(const MyString& filename);
-MyString read(const char *filename);
+MyString& read(const MyString& filename);
+MyString& read(const char *filename);
 
 /*
  从文件中读取所有内容
@@ -44,6 +44,7 @@ char *_read(const char *filename)
     f = fopen(filename, "rb");
     
     if (f) {
+        
         // get FILE_SIZE
         fseek(f, 0, SEEK_END);
         fsize = (int)ftell(f);
@@ -53,32 +54,39 @@ char *_read(const char *filename)
         delete[] content;
         content = new char[fsize + 1];
         fread(content, sizeof(char), fsize, f);
-        
         fclose(f);
+        
+        content[fsize] = '\0';
+        
+        return content;
+        
+    } else {
+        
+        delete[] content;
+        throw MyString("Cannot open file");
+        
     }
-    
-    content[fsize] = '\0';
-    
-    return content;
 }
-MyString read(const MyString& filename)
+
+MyString& read(const MyString& filename)
 {
     char *fp = filename.toCString();
     
-    MyString val = read(fp);
+    MyString &val = read(fp);
     delete[] fp;
     
     return val;
 }
-MyString read(const char *filename)
+
+MyString& read(const char *filename)
 {
     char *content;
     content = _read(filename);
     
-    MyString val(content);
+    MyString *val = new MyString(content);
     delete[] content;
     
-    return val;
+    return *val;
 }
 
 #endif

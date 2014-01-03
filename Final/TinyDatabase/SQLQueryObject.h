@@ -51,7 +51,6 @@ class SQLQueryObject
 {
 public:
     
-    bool hasError;
     MyString _query;
     std::map<int, int> _int;
     std::map<int, MyString> _str;

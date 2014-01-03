@@ -38,6 +38,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
     std::vector<char> _value;
     std::vector<char> t;
     
+    //TODO: select * from student where id > 1 and name xx b
     
     while (pos <= pos_max) {
         
@@ -84,8 +85,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                 } else {
                     // 不在字符串中，那这是神马符号?
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E01] Syntax error at " << pos << std::endl;
+                    throw MyString("[!E01] Syntax error at ").concat(pos);
                     break;
                 }
                 
@@ -101,8 +101,8 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         (token == SQLConstants::TOKEN_WHERE && subtoken == SQLConstants::TOKEN_COLUMN_NAME)
                         ) {
                         // UPDATE TABLE_NAME SET COLUMN_NAME = COLUMN_VALUE
-                        // UPDATE TABLE_NAME SET COLUMN_NAME = _"_COLUMN_VALUE" << we are here
-                        // WHERE COLUMN_NAME ? _"_COLUMN_VALUE" << or we are here
+                        // UPDATE TABLE_NAME SET COLUMN_NAME = _"_COLUMN_VALUE" // we are here
+                        // WHERE COLUMN_NAME ? _"_COLUMN_VALUE"                 // or we are here
                         in_string = true;
                         _value.clear();
                         break;
@@ -118,20 +118,19 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         in_string = false;
                         
                         if (token == SQLConstants::TOKEN_WHERE) {
-                            // WHERE COLUMN_NAME ? "COLUMN_VALUE_"_ << we are here
+                            // WHERE COLUMN_NAME ? "COLUMN_VALUE_"_ // we are here
                             subtoken = SQLConstants::TOKEN_COLUMN_VALUE;
                             _where_statement.value = MyString(_value);
                             query->_where_statements.push_back(SQLWhereComponentObject(_where_statement));
                             break;
                         } else if (_opToken == SQLConstants::OPERATION_UPDATE) {
-                            // UPDATE TABLE_NAME SET COLUMN_NAME = "COLUMN_VALUE_"_ << we are here
+                            // UPDATE TABLE_NAME SET COLUMN_NAME = "COLUMN_VALUE_"_ // we are here
                             token = SQLConstants::TOKEN_BEGIN_WHERE;
                             query->_str[SQLConstants::TOKEN_COLUMN_VALUE] = MyString(_value);
                             break;
                         } else {
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E01.1] Syntax error at " << pos << ", unexpected \'\"\'" << std::endl;
+                            throw MyString("[!E01.1] Syntax error at ").concat(pos).concat(", unexpected \'\"\'");
                             break;
                         }
                     }
@@ -177,8 +176,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         parenthesis++;
                     } else {
                         syntax_error = true;
-                        query->hasError = true;
-                        std::cout << "[!E02.1] Syntax error at " << pos << ", unexpected \'(\'" << std::endl;
+                        throw MyString("[!E02.1] Syntax error at ").concat(pos).concat(", unexpected \'(\'");
                         break;
                     }
                     
@@ -189,8 +187,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     break;
                 } else if (in_parenthesis) {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E02.2] Syntax error at " << pos << ", \')\' expected" << std::endl;
+                    throw MyString("[!E02.2] Syntax error at ").concat(pos).concat(", \')\' expected");
                     break;
                 } else {
                     if (expect_parenthesis_group) {
@@ -200,8 +197,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         break;
                     } else {
                         syntax_error = true;
-                        query->hasError = true;
-                        std::cout << "[!E02.3] Syntax error at " << pos << ", unexpected \'(\'" << std::endl;
+                        throw MyString("[!E02.3] Syntax error at ").concat(pos).concat(", unexpected \'(\'");
                         break;
                     }
                 }
@@ -253,8 +249,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     if (!_create_table_column.end) {
                         // 不允许没有分号来结束 CREATE_TABLE
                         syntax_error = true;
-                        query->hasError = true;
-                        std::cout << "[!E03.1] Syntax error at " << pos << ", \';\' expected" << std::endl;
+                        throw MyString("[!E03.1] Syntax error at ").concat(pos).concat(", \';\' expected");
                         break;
                     }
                     token = SQLConstants::TOKEN_TABLE_END;
@@ -263,8 +258,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     break;
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E03.2] Syntax error at " << pos << ", unexpected \')\'" << std::endl;
+                    throw MyString("[!E03.2] Syntax error at ").concat(pos).concat(", unexpected \')\'");
                     break;
                 }
                 
@@ -282,8 +276,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         //此处没有break，给下面的处理
                     } else {
                         syntax_error = true;
-                        query->hasError = true;
-                        std::cout << "[!E04.1] Syntax error at " << pos << ", expected NULL" << std::endl;
+                        throw MyString("[!E04.1] Syntax error at ").concat(pos).concat(", expected NULL");
                         break;
                     }
                 }
@@ -297,8 +290,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     break;
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E04.2] Syntax error at " << pos << ", unexpected \';\'" << std::endl;
+                    throw MyString("[!E04.2] Syntax error at ").concat(pos).concat(", unexpected \';\'");
                     break;
                 }
             
@@ -325,14 +317,12 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         break;
                     } else {
                         syntax_error = true;
-                        query->hasError = true;
-                        std::cout << "[!E05.1] Syntax error at " << pos << ", \'=\' expected" << std::endl;
+                        throw MyString("[!E05.1] Syntax error at ").concat(pos).concat(", \'=\' expected");
                         break;
                     }
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E05.2] Syntax error at " << pos << ", unexpected \'<\'" << std::endl;
+                    throw MyString("[!E05.2] Syntax error at ").concat(pos).concat(", unexpected \'<\'");
                     break;
                 }
                 
@@ -366,8 +356,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E06] Syntax error at " << pos << ", unexpected \'<\'" << std::endl;
+                    throw MyString("[!E06] Syntax error at ").concat(pos).concat(", unexpected \'<\'");
                     break;
                 }
                 
@@ -401,8 +390,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E07] Syntax error at " << pos << ", unexpected \'>\'" << std::endl;
+                    throw MyString("[!E07] Syntax error at ").concat(pos).concat(", unexpected \'>\'");
                     break;
                 }
                 
@@ -433,8 +421,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     break;
                 } else {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E08] Syntax error at " << pos << ", unexpected \'=\'" << std::endl;
+                    throw MyString("[!E08] Syntax error at ").concat(pos).concat(", unexpected \'=\'");
                     break;
                 }
                 
@@ -443,8 +430,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                 if (in_string) {
                     // 字符串未闭合就结束了
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E09] Syntax error at " << pos << ", unclosed string" << std::endl;
+                    throw MyString("[!E09] Syntax error at ").concat(pos).concat(", unclosed string");
                     break;
                 }
                 
@@ -469,8 +455,6 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     status = SQLParser::PARSE_STATUS_DELIM;
                     MyString _t = MyString(t);
                     
-                    //std::cout << token << _t << std::endl;
-                    
                     if (token == SQLConstants::TOKEN_NULL) {
                         // 没有上一个token，则该token为OPCODE
                         token = SQLConstants::TOKEN_OPERATION;
@@ -478,8 +462,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         
                         if (_opToken == SQLConstants::OPERATION_UNDEFINED) {
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E10] Syntax error, invalid OPCODE: " << _t << std::endl;
+                            throw MyString("[!E10] Syntax error, invalid OPCODE: ").concat(_t);
                             break;
                         } else {
                             query->_int[SQLConstants::TOKEN_OPERATION] = _opToken;
@@ -498,8 +481,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                             } else if (_t.toUpper() == "FROM") {
                                 // 不能是 FROM
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E11] Syntax error at " << pos << ", COLUMN_NAME expected" << std::endl;
+                                throw MyString("[!E11] Syntax error at ").concat(pos).concat(", COLUMN_NAME expected");
                                 break;
                             } else {
                                 // 解析列名
@@ -519,8 +501,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E12] Syntax error at " << pos << ", \'FROM\' expected" << std::endl;
+                                throw MyString("[!E12] Syntax error at ").concat(pos).concat(", \'FROM\' expected");
                                 break;
                             }
                         } else if (_opToken == SQLConstants::OPERATION_CREATE_TABLE) {
@@ -530,15 +511,13 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E13] Syntax error at " << pos << ", \'TABLE\' expected" << std::endl;
+                                throw MyString("[!E13] Syntax error at ").concat(pos).concat(", \'TABLE\' expected");
                                 break;
                             }
                         } else {
                             // will never reach here
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E14] WTF?" << std::endl;
+                            throw MyString("[!E14] WTF?");
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_TOP) {
@@ -550,15 +529,13 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E15] Syntax error at " << pos << ", integer expected" << std::endl;
+                                throw MyString("[!E15] Syntax error at ").concat(pos).concat(", integer expected");
                                 break;
                             }
                         } else {
                             // Unreachable here
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E16] Syntax error at " << pos << std::endl;
+                            throw MyString("[!E16] Syntax error at ").concat(pos);
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_TOP_VALUE) {
@@ -569,7 +546,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         break;
                     } else if (token == SQLConstants::TOKEN_COLUMN_NAME) {
                         if (_opToken == SQLConstants::OPERATION_UPDATE) {
-                            // UPDATE TABLE_NAME SET COLUMN_NAME = _COLUMN_VALUE_ << we are here
+                            // UPDATE TABLE_NAME SET COLUMN_NAME = _COLUMN_VALUE_ // we are here
                             // UPDATE TABLE_NAME SET COLUMN_NAME = "COLUMN_VALUE"
                             expect_string = false;
                             token = SQLConstants::TOKEN_BEGIN_WHERE;
@@ -587,15 +564,13 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E17] Syntax error at " << pos << ", \'ASC|DESC\' expected" << std::endl;
+                                throw MyString("[!E17] Syntax error at ").concat(pos).concat(", \'ASC|DESC\' expected");
                                 break;
                             }
                         } else {
                             // Unreachable here
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E18] Syntax error at " << pos << std::endl;
+                            throw MyString("[!E18] Syntax error at ").concat(pos);
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_COLUMN_NAME_MULTI) {
@@ -620,8 +595,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         } else {
                             // Unreachable here
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E19] Syntax error at " << pos << std::endl;
+                            throw MyString("[!E19] Syntax error at ").concat(pos);
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_TABLE_NAME) {
@@ -632,15 +606,13 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E20] Syntax error at " << pos << ", \'SET\' expected" << std::endl;
+                                throw MyString("[!E20] Syntax error at ").concat(pos).concat(", \'SET\' expected");
                                 break;
                             }
                         } else {
                             // Unreachable here
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E21] Syntax error at " << pos << std::endl;
+                            throw MyString("[!E21] Syntax error at ").concat(pos);
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_SET) {
@@ -655,8 +627,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                             break;
                         } else {
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E22] Syntax error at " << pos << ", \'ORDER\' expected" << std::endl;
+                            throw MyString("[!E22] Syntax error at ").concat(pos).concat(", \'ORDER\' expected");
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_WHERE) {
@@ -672,8 +643,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 
                                 if (_where_statement.name.length() == 0) {
                                     syntax_error = true;
-                                    query->hasError = true;
-                                    std::cout << "[!E22.1] Syntax error at " << pos << ", unexpected \'LIKE\'" << std::endl;
+                                    throw MyString("[!E22.1] Syntax error at ").concat(pos).concat(", unexpected \'LIKE\'");
                                     break;
                                 } else {
                                     subtoken = SQLConstants::TOKEN_COLUMN_NAME;
@@ -688,7 +658,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             }
                         } else if (subtoken == SQLConstants::TOKEN_COLUMN_NAME) {
-                            // WHERE COLUMN_NAME = _COLUMN_VALUE_ << we are here
+                            // WHERE COLUMN_NAME = _COLUMN_VALUE_ // we are here
                             expect_string = false;
                             subtoken = SQLConstants::TOKEN_COLUMN_VALUE;
                             _where_statement.value = _t;
@@ -709,8 +679,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                     if (parenthesis > 0) {
                                         // 进入 ORDER 前判断括号是否已经平衡
                                         syntax_error = true;
-                                        query->hasError = true;
-                                        std::cout << "[!E22.2] Syntax error at " << pos << ", \')\' expected" << std::endl;
+                                        throw MyString("[!E22.2] Syntax error at ").concat(pos).concat(", \')\' expected");
                                         break;
                                     } else {
                                         token = SQLConstants::TOKEN_ORDER;
@@ -718,14 +687,12 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                     }
                                 } else {
                                     syntax_error = true;
-                                    query->hasError = true;
-                                    std::cout << "[!E22.3] Syntax error at " << pos << ", unexpected \'ORDER\'" << std::endl;
+                                    throw MyString("[!E22.3] Syntax error at ").concat(pos).concat(", unexpected \'ORDER\'");
                                     break;
                                 }
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E22.4] Syntax error at " << pos << ", \'AND|OR\' expected" << std::endl;
+                                throw MyString("[!E22.4] Syntax error at ").concat(pos).concat(", \'AND|OR\' expected");
                                 break;
                             }
                         }
@@ -741,8 +708,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                         } else {
                             if (_t.toUpper() != "WHERE") {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E23] Syntax error at " << pos << ", \'WHERE\' expected" << std::endl;
+                                throw MyString("[!E23] Syntax error at ").concat(pos).concat(", \'WHERE\' expected");
                                 break;
                             } else {
                                 token = SQLConstants::TOKEN_WHERE;
@@ -752,8 +718,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                     } else if (token == SQLConstants::TOKEN_ORDER) {
                         if (_t.toUpper() != "BY") {
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E25] Syntax error at " << pos << ", \'BY\' expected" << std::endl;
+                            throw MyString("[!E25] Syntax error at ").concat(pos).concat(", \'BY\' expected");
                             break;
                         } else {
                             token = SQLConstants::TOKEN_ORDER_BY;
@@ -798,8 +763,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                                 break;
                             } else {
                                 syntax_error = true;
-                                query->hasError = true;
-                                std::cout << "[!E26] Syntax error at " << pos << ", \'[NOT] NULL\' expected" << std::endl;
+                                throw MyString("[!E26] Syntax error at ").concat(pos).concat(", \'[NOT] NULL\' expected");
                                 break;
                             }
                         }
@@ -811,8 +775,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                             break;
                         } else {
                             syntax_error = true;
-                            query->hasError = true;
-                            std::cout << "[!E27] Syntax error at " << pos << ", \'NULL\' expected" << std::endl;
+                            throw MyString("[!E27] Syntax error at ").concat(pos).concat(", \'NULL\' expected");
                             break;
                         }
                     } else if (token == SQLConstants::TOKEN_TABLE_COLUMN_NULL) {
@@ -844,8 +807,7 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                 } else {
                     // 其他特殊字符
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E28] Syntax error at " << pos << ", unexpected char " << ch << std::endl;
+                    throw MyString("[!E28] Syntax error at ").concat(pos).concat(", unexpected char ").concat(ch);
                 }
                 
                 break;
@@ -858,43 +820,43 @@ SQLQueryObject& SQLParser::parseLine(const MyString& line)
                 if (parenthesis > 0) {
                     // 结束前判断 WHERE 里的括号是否已经平衡
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E29.1] Syntax error at " << pos << ", \')\' expected" << std::endl;
+                    throw MyString("[!E29.1] Syntax error at ").concat(pos).concat(", \')\' expected");
                     break;
                 }
             }
             
             if (_opToken == SQLConstants::OPERATION_UNDEFINED) {
                 syntax_error = true;
-                query->hasError = true;
-                std::cout << "[!E29.2] Syntax error at " << pos << ", unknown OPCODE" << std::endl;
+                throw MyString("[!E29.2] Syntax error at ").concat(pos).concat(", unknown OPCODE");
                 break;
             } else if (_opToken == SQLConstants::OPERATION_SELECT) {
                 if (query->_select_columns.size() == 0) {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E29.3] Syntax error at " << pos << ", COLUMN_NAME expected" << std::endl;
+                    throw MyString("[!E29.3] Syntax error at ").concat(pos).concat(", COLUMN_NAME expected");
                     break;
                 }
                 
                 if (query->_str.find(SQLConstants::TOKEN_TABLE_NAME) == query->_str.end()) {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E29.4] Syntax error at " << pos << ", TABLE_NAME expected" << std::endl;
+                    throw MyString("[!E29.4] Syntax error at ").concat(pos).concat(", TABLE_NAME expected");
                     break;
                 }
             } else if (_opToken == SQLConstants::OPERATION_UPDATE) {
                 if (query->_str.find(SQLConstants::TOKEN_COLUMN_NAME) == query->_str.end()) {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E29.5] Syntax error at " << pos << ", COLUMN_NAME expected" << std::endl;
+                    throw MyString("[!E29.5] Syntax error at ").concat(pos).concat(", COLUMN_NAME expected");
                     break;
                 }
                 
                 if (query->_str.find(SQLConstants::TOKEN_COLUMN_VALUE) == query->_str.end()) {
                     syntax_error = true;
-                    query->hasError = true;
-                    std::cout << "[!E29.6] Syntax error at " << pos << ", COLUMN_VALUE expected" << std::endl;
+                    throw MyString("[!E29.6] Syntax error at ").concat(pos).concat(", COLUMN_VALUE expected");
+                    break;
+                }
+            } else if (_opToken == SQLConstants::OPERATION_CREATE_TABLE) {
+                if (query->_str.find(SQLConstants::TOKEN_TABLE_NAME) == query->_str.end()) {
+                    syntax_error = true;
+                    throw MyString("[!E29.7] Syntax error at ").concat(pos).concat(", TABLE_NAME expected");
                     break;
                 }
             }

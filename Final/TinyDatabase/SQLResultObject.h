@@ -21,17 +21,10 @@
 class SQLResultObject
 {
 public:
-    bool ok;
-    MyString err;
     int n;
     long execute_time;
     MyString tableName;
     const SQLTable *table;
-    
-    /*
-     错误构造函数
-     */
-    SQLResultObject(const MyString& error);
     
     /*
      空结果构造函数

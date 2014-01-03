@@ -20,14 +20,8 @@ SQLWhereComponentObject::SQLWhereComponentObject(const SQLWhereStatementObject _
     statement = _statement;
 }
 
-SQLQueryObject::SQLQueryObject()
-{
-    hasError = false;
-}
-
 SQLQueryObject::SQLQueryObject(const MyString& query)
 {
-    hasError = false;
     _query = query;
 }
 
@@ -167,7 +161,7 @@ bool SQLQueryObject::checkCondition(const SQLTable& table) const
 {
     for (int i = 0; i < _where_statements.size(); ++i) {
         if (_where_statements[i].type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
-            if (table.getColumnIndexByName(_where_statements[i].statement.name) == -1) {
+            if (table.getColumnIndexByNameWithException(_where_statements[i].statement.name) == -1) {
                 return false;
             }
         }
@@ -248,7 +242,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
     bool has_wildcard = false;
     
     if (_select_columns.size() == 0) {
-        return false;
+        throw MyString("Syntax error: filter columns not specificed");
     }
     
     for (int i = 0; i < _select_columns.size(); ++i) {
@@ -259,7 +253,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
     }
     
     if (has_wildcard && _select_columns.size() > 1) {
-        return false;
+        throw MyString("Syntax error: * expected");
     }
     
     if (has_wildcard) {
@@ -267,7 +261,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
     }
     
     for (int i = 0; i < _select_columns.size(); ++i) {
-        if (table.getColumnIndexByName(_select_columns[i]) == -1) {
+        if (table.getColumnIndexByNameWithException(_select_columns[i]) == -1) {
             return false;
         }
     }

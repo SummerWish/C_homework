@@ -8,20 +8,12 @@
 
 #include "SQLResultObject.h"
 
-SQLResultObject::SQLResultObject(const MyString& error)
-{
-    table = nullptr;
-    ok = false;
-    err = error;
-}
-
 SQLResultObject::SQLResultObject(long time,
                                  const MyString& affect_table)
 {
     table = nullptr;
     tableName = affect_table;
     execute_time = time;
-    ok = true;
 }
 
 SQLResultObject::SQLResultObject(long time,
@@ -30,7 +22,6 @@ SQLResultObject::SQLResultObject(long time,
     table = nullptr;
     tableName = affect_table;
     execute_time = time;
-    ok = true;
     n = affected_rows;
 }
 
@@ -39,7 +30,6 @@ SQLResultObject::SQLResultObject(long time,
 {
     tableName = affect_table;
     execute_time = time;
-    ok = true;
     
     table = records;
     n = (int)(*records).rows.size();

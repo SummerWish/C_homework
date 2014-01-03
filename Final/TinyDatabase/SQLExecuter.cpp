@@ -15,12 +15,6 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
 {
     MyTimer timer;
     
-    //std::cout << query._query << std::endl;
-    
-    if (query.hasError) {
-        return *new SQLResultObject(MyString("Syntax error"));
-    }
-    
     switch (query._int.find(SQLConstants::TOKEN_OPERATION)->second)
     {
         case SQLConstants::OPERATION_CREATE_TABLE:
@@ -30,7 +24,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             
             if (existance) {
                 // TABLE already exists
-                return *new SQLResultObject(MyString("Table [").concat(tableName).concat("] already exists"));
+                throw MyString("Table [").concat(tableName).concat("] already exists");
             }
             
             // create table
@@ -43,7 +37,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
                 result = _storage[tableName].createColumn(_col.name, _col.type/*, _col.size, _col.can_null*/);
                 
                 if (!result) {
-                    return *new SQLResultObject(MyString("Column [").concat(_col.name).concat("] duplicate in table [").concat(tableName).concat("]"));
+                    throw MyString("Column [").concat(_col.name).concat("] duplicate in table [").concat(tableName).concat("]");
                 }
             }
             
@@ -57,7 +51,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                return *new SQLResultObject(MyString("Table [").concat(tableName).concat("] not exists"));
+                throw MyString("Table [").concat(tableName).concat("] not exists");
             }
             
             SQLTable &table = _storage[tableName];
@@ -66,9 +60,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool has_condition = (query._where_statements.size() > 0);
             CompiledSQLConditionObject condition;
             if (has_condition) {
-                if (!query.checkCondition(table)) {
-                    return *new SQLResultObject(MyString("Condition column not found"));
-                }
+                query.checkCondition(table);
                 condition = query.compileCondition(table);
             }
             
@@ -99,7 +91,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                return *new SQLResultObject(MyString("Table [").concat(tableName).concat("] not exists"));
+                throw MyString("Table [").concat(tableName).concat("] not exists");
             }
             
             SQLTable &table = _storage[tableName];
@@ -108,17 +100,13 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool has_condition = (query._where_statements.size() > 0);
             CompiledSQLConditionObject condition;
             if (has_condition) {
-                if (!query.checkCondition(table)) {
-                    return *new SQLResultObject(MyString("Condition column not found"));
-                }
+                query.checkCondition(table);
                 condition = query.compileCondition(table);
             }
             
             // 优化SELECT COLUMN
             CompiledSQLFilterObject filter;
-            if (!query.checkFilter(table)) {
-                return *new SQLResultObject(MyString("Invalid filtering column"));
-            }
+            query.checkFilter(table);
             filter = query.compileFilter(table);
             
             // 初始化结果集
@@ -137,11 +125,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             int order_col = -1, order_col_type = -1;
             int order_order = -1;
             if (query._str.find(SQLConstants::TOKEN_COLUMN_NAME) != query._str.end()) {
-                order_col = table.getColumnIndexByName(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
-                if (order_col == -1) {
-                    return *new SQLResultObject(MyString("Invalid ORDER column"));
-                }
-                
+                order_col = table.getColumnIndexByNameWithException(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
                 order_col_type = table.head[order_col].type;
                 
                 if (query._int.find(SQLConstants::TOKEN_ORDER_ORDER) == query._int.end()) {
@@ -226,7 +210,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool existance = _storage.tableExists(tableName);
             
             if (!existance) {
-                return *new SQLResultObject(MyString("Table [").concat(tableName).concat("] not exists"));
+                throw MyString("Table [").concat(tableName).concat("] not exists");
             }
             
             SQLTable &table = _storage[tableName];
@@ -235,9 +219,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             bool has_condition = (query._where_statements.size() > 0);
             CompiledSQLConditionObject condition;
             if (has_condition) {
-                if (!query.checkCondition(table)) {
-                    return *new SQLResultObject(MyString("Condition column not found"));
-                }
+                query.checkCondition(table);
                 condition = query.compileCondition(table);
             }
             
@@ -246,10 +228,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
             float set_col_v_f;
             MyString set_col_v_s;
             
-            set_col = table.getColumnIndexByName(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
-            if (set_col == -1) {
-                return *new SQLResultObject(MyString("Invalid ORDER column"));
-            }
+            set_col = table.getColumnIndexByNameWithException(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
             set_col_type = table.head[set_col].type;
             
             if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
@@ -310,5 +289,5 @@ SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject
         }
     }
     
-    return *new SQLResultObject(MyString("Unknown operation"));
+    throw MyString("Unknown operation");
 }

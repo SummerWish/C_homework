@@ -44,6 +44,20 @@ public:
     }
     
     /*
+     给定列名，返回列下标
+     若没有这个列，则抛出异常
+     */
+    int getColumnIndexByNameWithException(const MyString& name) const
+    {
+        int ret = getColumnIndexByName(name);
+        if (ret != -1) {
+            return ret;
+        } else {
+            throw MyString("Undefined column [").concat(name).concat("]");
+        }
+    }
+    
+    /*
      添加一列
      */
     bool createColumn(const SQLTableHeader column)
@@ -118,6 +132,11 @@ public:
     {
         std::ofstream fout;
         fout.open(filepath);
+        
+        if (!fout.good()) {
+            throw MyString("Failed to write file");
+        }
+        
         int n = print(fout);
         fout.close();
         return n;
@@ -167,6 +186,11 @@ public:
     {
         std::ifstream fin;
         fin.open(filepath);
+        
+        if (!fin.good()) {
+            throw MyString("Cannot open file");
+        }
+        
         int n = import(fin);
         fin.close();
         
