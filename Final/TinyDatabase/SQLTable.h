@@ -15,37 +15,45 @@
 #include <list>
 #include <map>
 #include "MyString.h"
-#include "SQLTableHeaderColumn.h"
+#include "SQLTableHeader.h"
 #include "SQLTableRow.h"
 
 class SQLTable
 {
+private:
+    std::map<MyString, int> _headMapping;
+    
 public:
-    std::vector<SQLTableHeaderColumn> head;
-    std::map<MyString, int> _colIndex;
+    std::vector<SQLTableHeader> head;
     std::list<SQLTableRow> rows;
     
-    bool createColumn(const MyString& name, int type, int size, bool can_null)
+    int getColumnIndexByName(const MyString& name) const
     {
-        //_colIndex = std::map<MyString, int>();
+        auto it = _headMapping.find(name.toUpper());
         
+        if (it != _headMapping.end()) {
+            return it->second;
+        } else {
+            return -1;
+        }
+    }
+    
+    bool createColumn(const MyString& name, int type)
+    {
         MyString _name = name.toUpper();
         
-        if (_colIndex.find(_name) != _colIndex.end()) {
+        if (getColumnIndexByName(_name) != -1) {
             // column exists
-            
             return false;
         } else {
-            // std::cout << _name << " " << (int)head.size() << std::endl;
-            _colIndex[_name] = (int)head.size();
-            
-            head.push_back(SQLTableHeaderColumn(_name, type, size, can_null));
+            _headMapping[_name] = (int)head.size();
+            head.push_back(SQLTableHeader(_name, type));
             
             return true;
         }
     }
     
-    void print(std::ostream& s)
+    void print(std::ostream& s) const
     {
         s << std::left;
         
@@ -79,9 +87,7 @@ public:
             SQLTableRow row;
             
             for (int i = 0; i < cols.size(); ++i) {
-                SQLTableColumn col;
-                
-                col._type = head[i].type;
+                SQLTableCell col;
                 
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
                     col._v_s = cols[i];

@@ -42,7 +42,7 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             for (auto it = query._create_table_columns.begin(); it != query._create_table_columns.end(); ++it) {
                 auto &_col = *it;
                 bool result;
-                result = _storage[tableName].createColumn(_col.name, _col.type, _col.size, _col.can_null);
+                result = _storage[tableName].createColumn(_col.name, _col.type/*, _col.size, _col.can_null*/);
                 
                 if (!result) {
                     return *new SQLResultObject(MyString("Column [").concat(_col.name).concat("] duplicate in table [").concat(tableName).concat("]"));
@@ -138,10 +138,11 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             int order_col = -1, order_col_type = -1;
             int order_order = -1;
             if (query._str.find(SQLConstants::TOKEN_COLUMN_NAME) != query._str.end()) {
-                if (table._colIndex.find(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second.toUpper()) == table._colIndex.end()) {
+                order_col = table.getColumnIndexByName(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
+                if (order_col == -1) {
                     return *new SQLResultObject(MyString("Invalid ORDER column"));
                 }
-                order_col = table._colIndex.find(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second.toUpper())->second;
+                
                 order_col_type = table.head[order_col].type;
                 
                 if (query._int.find(SQLConstants::TOKEN_ORDER_ORDER) == query._int.end()) {
@@ -248,11 +249,10 @@ SQLResultObject& SQLExecuter::execute(const SQLQueryObject& query)
             float set_col_v_f;
             MyString set_col_v_s;
             
-            if (table._colIndex.find(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second.toUpper()) == table._colIndex.end()) {
+            set_col = table.getColumnIndexByName(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second);
+            if (set_col == -1) {
                 return *new SQLResultObject(MyString("Invalid ORDER column"));
             }
-            
-            set_col = table._colIndex.find(query._str.find(SQLConstants::TOKEN_COLUMN_NAME)->second.toUpper())->second;
             set_col_type = table.head[set_col].type;
             
             if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
@@ -348,7 +348,9 @@ void SQLExecuter::xport(const char *table, const char *filepath)
 
 void SQLExecuter::xport(const MyString& table, const MyString& filepath)
 {
-    xport(table, filepath.toCString());
+    char *fp = filepath.toCString();
+    xport(table, fp);
+    delete[] fp;
 }
 
 void SQLExecuter::xport(const MyString& table, const char *filepath)

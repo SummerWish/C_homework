@@ -144,7 +144,7 @@ bool SQLQueryObject::checkCondition(const SQLTable& table) const
 {
     for (int i = 0; i < _where_statements.size(); ++i) {
         if (_where_statements[i].type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
-            if (table._colIndex.find(_where_statements[i].statement.name.toUpper()) == table._colIndex.end()) {
+            if (table.getColumnIndexByName(_where_statements[i].statement.name) == -1) {
                 return false;
             }
         }
@@ -188,7 +188,7 @@ CompiledSQLConditionObject& SQLQueryObject::compileCondition(const SQLTable& tab
         
         t.type = component.type;
         if (component.type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
-            t.statement.rowIndex = table._colIndex.find(component.statement.name.toUpper())->second;
+            t.statement.rowIndex = table.getColumnIndexByName(component.statement.name);
             t.statement.rowType = table.head[t.statement.rowIndex].type;
             t.statement.op = component.statement.op;
             t.statement.value = component.statement.value;
@@ -261,7 +261,7 @@ bool SQLQueryObject::checkFilter(const SQLTable& table) const
     }
     
     for (int i = 0; i < _select_columns.size(); ++i) {
-        if (table._colIndex.find(_select_columns[i].toUpper()) == table._colIndex.end()) {
+        if (table.getColumnIndexByName(_select_columns[i]) == -1) {
             return false;
         }
     }
@@ -285,7 +285,7 @@ CompiledSQLFilterObject& SQLQueryObject::compileFilter(const SQLTable& table) co
     ret->wild = false;
     
     for (int i = 0; i < _select_columns.size(); ++i) {
-        filter.insert(table._colIndex.find(_select_columns[i].toUpper())->second);
+        filter.insert(table.getColumnIndexByName(_select_columns[i]));
     }
     
     ret->columns = filter;
