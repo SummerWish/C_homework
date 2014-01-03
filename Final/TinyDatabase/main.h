@@ -17,6 +17,7 @@
 #include "SQL.h"
 
 #define APP_VERSION "0.0.1.20131222.142400"
+#define OUTPUT_PREFIX "1352978_"
 
 int database_handler_create_table(std::vector<MyString> params);
 int database_handler_import(std::vector<MyString> params);
@@ -25,7 +26,6 @@ int database_handler_update(std::vector<MyString> params);
 int database_handler_delete(std::vector<MyString> params);
 int database_handler_interactive_mode(std::vector<MyString> params);
 int database_handler_help(std::vector<MyString> params);
-int database_handler_index(std::vector<MyString> params);
 int database_handler_quit(std::vector<MyString> params);
 
 char *_read(const char *filename);
