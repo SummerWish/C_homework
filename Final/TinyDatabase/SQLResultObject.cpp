@@ -10,6 +10,7 @@
 
 SQLResultObject::SQLResultObject(const MyString& error)
 {
+    table = nullptr;
     ok = false;
     err = error;
 }
@@ -17,6 +18,7 @@ SQLResultObject::SQLResultObject(const MyString& error)
 SQLResultObject::SQLResultObject(long time,
                                  const MyString& affect_table)
 {
+    table = nullptr;
     tableName = affect_table;
     execute_time = time;
     ok = true;
@@ -25,6 +27,7 @@ SQLResultObject::SQLResultObject(long time,
 SQLResultObject::SQLResultObject(long time,
                                  const MyString& affect_table, int affected_rows)
 {
+    table = nullptr;
     tableName = affect_table;
     execute_time = time;
     ok = true;
@@ -32,14 +35,21 @@ SQLResultObject::SQLResultObject(long time,
 }
 
 SQLResultObject::SQLResultObject(long time,
-                                 const MyString& affect_table, const SQLTable& records)
+                                 const MyString& affect_table, const SQLTable *records)
 {
     tableName = affect_table;
     execute_time = time;
     ok = true;
     
-    table = std::move(records);    //TODO: avoid copying
-    n = (int)table.rows.size();
+    table = records;
+    n = (int)(*records).rows.size();
+}
+
+SQLResultObject::~SQLResultObject()
+{
+    if (table != nullptr) {
+        delete table;
+    }
 }
 
 /*
@@ -47,7 +57,7 @@ SQLResultObject::SQLResultObject(long time,
  */
 void SQLResultObject::print(std::ostream& s) const
 {
-    table.print(s);
+    (*table).print(s);
 }
 
 /*
@@ -55,10 +65,10 @@ void SQLResultObject::print(std::ostream& s) const
  */
 void SQLResultObject::xport(const MyString& filepath) const
 {
-    table.xport(filepath);
+    (*table).xport(filepath);
 }
 
 void SQLResultObject::xport(const char *filepath) const
 {
-    table.xport(filepath);
+    (*table).xport(filepath);
 }

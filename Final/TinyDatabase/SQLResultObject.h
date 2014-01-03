@@ -26,7 +26,7 @@ public:
     int n;
     long execute_time;
     MyString tableName;
-    SQLTable table;
+    const SQLTable *table;
     
     /*
      错误构造函数
@@ -46,7 +46,12 @@ public:
     /*
      返回结果集的构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table, const SQLTable& records);
+    SQLResultObject(long time, const MyString& affect_table, const SQLTable *records);
+    
+    /*
+     析构函数
+     */
+    ~SQLResultObject();
     
     /*
      输出结果到流
