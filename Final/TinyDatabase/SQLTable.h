@@ -74,6 +74,19 @@ public:
     {
         s << std::left;
         
+        // output columns
+        for (auto it = head.begin(); it != head.end(); ++it) {
+            auto &head = *it;
+            s << std::setw(15) << head.name;
+        }
+        s << std::endl;
+        
+        for (auto it = head.begin(); it != head.end(); ++it) {
+            s << "===============";
+        }
+        s << std::endl;
+        
+        // output content
         for (auto it = rows.begin(); it != rows.end(); ++it) {
             auto &row = *it;
             for (int i = 0; i < row.cols.size(); ++i) {
