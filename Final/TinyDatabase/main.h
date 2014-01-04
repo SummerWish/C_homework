@@ -62,6 +62,8 @@ char *_read(const char *filename)
         
     } else {
         
+        fclose(f);
+        
         delete[] content;
         throw MyString("Cannot open file");
         
