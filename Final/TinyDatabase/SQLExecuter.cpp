@@ -11,7 +11,7 @@
 /*
  执行单一SQL语句
  */
-SQLResultObject& SQLExecuter::execute(SQLStorage &_storage, const SQLQueryObject& query)
+SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject& query)
 {
     MyTimer timer;
     
