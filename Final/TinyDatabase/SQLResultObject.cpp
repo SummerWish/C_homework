@@ -47,7 +47,9 @@ SQLResultObject::~SQLResultObject()
  */
 void SQLResultObject::print(std::ostream& s) const
 {
-    (*table).print(s);
+    if (table != nullptr) {
+        (*table).print(s);
+    }
 }
 
 /*
@@ -55,10 +57,14 @@ void SQLResultObject::print(std::ostream& s) const
  */
 void SQLResultObject::xport(const MyString& filepath) const
 {
-    (*table).xport(filepath);
+    if (table != nullptr) {
+        (*table).xport(filepath);
+    }
 }
 
 void SQLResultObject::xport(const char *filepath) const
 {
-    (*table).xport(filepath);
+    if (table != nullptr) {
+        (*table).xport(filepath);
+    }
 }
