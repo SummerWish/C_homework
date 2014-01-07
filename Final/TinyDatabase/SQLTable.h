@@ -23,10 +23,16 @@ class SQLTable
 {
 private:
     std::map<MyString, int> _headMapping;
+    int increase_counter;
     
 public:
     std::vector<SQLTableHeader> head;
     std::list<SQLTableRow> rows;
+    
+    SQLTable()
+    {
+        increase_counter = 0;
+    }
     
     /*
      给定列名，返回列下标
@@ -157,20 +163,19 @@ public:
                 continue;
             }
             
+            // create row
             affected_rows++;
-            SQLTableRow row;
-            row.cols.reserve(head.size());
+            SQLTableRow row(increase_counter++, head.size());
             
+            // insert other data
             for (int i = 0; i < cols.size(); ++i) {
-                SQLTableCell col;
                 
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    col._v_s = cols[i];
+                    row.cols.push_back(SQLTableCell(cols[i]));
                 } else {
-                    col._v_f = cols[i].toFloat();
+                    row.cols.push_back(SQLTableCell(cols[i].toFloat()));
                 }
                 
-                row.cols.push_back(col);
             }
             
             rows.push_back(row);

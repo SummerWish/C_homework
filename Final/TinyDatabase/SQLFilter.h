@@ -28,7 +28,7 @@ public:
             return row;
         }
         
-        auto *ret = new SQLTableRow();
+        auto *ret = new SQLTableRow(row._id);
         ret->cols.reserve(columns.size());
         
         for (auto it = columns.begin(); it != columns.end(); ++it) {

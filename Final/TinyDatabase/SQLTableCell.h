@@ -16,6 +16,16 @@ class SQLTableCell
 public:
     MyString _v_s;
     float    _v_f;
+    
+    SQLTableCell(MyString& s)
+    {
+        _v_s = s;
+    }
+    
+    SQLTableCell(float v)
+    {
+        _v_f = v;
+    }
 };
 
 #endif

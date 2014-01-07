@@ -17,6 +17,18 @@ class SQLTableRow
 {
 public:
     std::vector<SQLTableCell> cols;
+    int _id;
+    
+    SQLTableRow(int rid)
+    {
+        _id = rid;
+    }
+    
+    SQLTableRow(int rid, size_t size)
+    {
+        _id = rid;
+        cols.reserve(size);
+    }
 };
 
 #endif
