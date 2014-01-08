@@ -55,7 +55,7 @@ int database_handler_interactive_mode(const std::vector<MyString>& params)
                 
                 std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
                 std::cout << "Affected " << result.n << " rows." << std::endl;
-                if (result.table != nullptr && (*(result.table)).rows.size() > 0) {
+                if (result.table != nullptr && result.table->rows.size() > 0) {
                     result.print(std::cout);
                 }
                 

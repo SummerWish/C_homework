@@ -32,7 +32,7 @@ SQLResultObject::SQLResultObject(long time,
     execute_time = time;
     
     table = records;
-    n = (int)(*records).rows.size();
+    n = (int)records->rows.size();
 }
 
 SQLResultObject::~SQLResultObject()
@@ -48,7 +48,7 @@ SQLResultObject::~SQLResultObject()
 void SQLResultObject::print(std::ostream& s) const
 {
     if (table != nullptr) {
-        (*table).print(s);
+        table->print(s);
     }
 }
 
@@ -58,13 +58,13 @@ void SQLResultObject::print(std::ostream& s) const
 void SQLResultObject::xport(const MyString& filepath) const
 {
     if (table != nullptr) {
-        (*table).xport(filepath);
+        table->xport(filepath);
     }
 }
 
 void SQLResultObject::xport(const char *filepath) const
 {
     if (table != nullptr) {
-        (*table).xport(filepath);
+        table->xport(filepath);
     }
 }

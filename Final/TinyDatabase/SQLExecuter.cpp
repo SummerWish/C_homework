@@ -115,11 +115,11 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             SQLTable *result_table = new SQLTable();
             if (filter.wild) {
                 for (auto it = table.head.begin(); it != table.head.end(); ++it) {
-                    (*result_table).createColumn(*it);
+                    result_table->createColumn(*it);
                 }
             } else {
                 for (auto it = filter.columns.begin(); it != filter.columns.end(); ++it) {
-                    (*result_table).createColumn(table.head[(*it)]);
+                    result_table->createColumn(table.head[(*it)]);
                 }
             }
             
@@ -196,7 +196,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             
             // filter and top, push data
             for (auto it = result.begin(); it != result.end(); ++it) {
-                (*result_table).rows.push_back(filter.filter(*it));
+                result_table->rows.push_back(filter.filter(*it));
                 if (--top_limit == 0) {
                     break;
                 }
@@ -245,7 +245,7 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             // 初始化结果集
             SQLTable *result_table = new SQLTable();
             for (auto it = table.head.begin(); it != table.head.end(); ++it) {
-                (*result_table).createColumn(*it);
+                result_table->createColumn(*it);
             }
             
             // begin updating
@@ -262,13 +262,13 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
                     for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
                         table.updateRow(*it, set_col, set_col_v_f);
-                        (*result_table).rows.push_back(**it);
+                        result_table->rows.push_back(**it);
                         affected_rows++;
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
                     for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
                         table.updateRow(*it, set_col, set_col_v_s);
-                        (*result_table).rows.push_back(**it);
+                        result_table->rows.push_back(**it);
                         affected_rows++;
                     }
                 }
@@ -280,8 +280,8 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
 
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        (*it).cols[set_col]._v_f = set_col_v_f;
-                        (*result_table).rows.push_back(*it);
+                        it->cols[set_col]._v_f = set_col_v_f;
+                        result_table->rows.push_back(*it);
                         affected_rows++;
                     }
 
@@ -290,8 +290,8 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
 
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        (*it).cols[set_col]._v_s = set_col_v_s;
-                        (*result_table).rows.push_back(*it);
+                        it->cols[set_col]._v_s = set_col_v_s;
+                        result_table->rows.push_back(*it);
                         affected_rows++;
                     }
 

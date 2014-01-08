@@ -161,7 +161,7 @@ public:
         }
         
         for (auto it = condition_components.begin(); it != condition_components.end(); ++it) {
-            switch ((*it).type) {
+            switch (it->type) {
                 case SQLConstants::WHERE_COMPONENT_AND:
                 {
                     bool a2 = result.top(); result.pop();
@@ -178,7 +178,7 @@ public:
                 }
                 default: //WHERE_COMPONENT_STATEMENT
                 {
-                    result.push(testStatement(row, (*it).statement));
+                    result.push(testStatement(row, it->statement));
                     break;
                 }
             }
