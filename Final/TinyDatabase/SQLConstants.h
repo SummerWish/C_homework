@@ -9,6 +9,9 @@
 #ifndef _352978_SQLConstants_h
 #define _352978_SQLConstants_h
 
+#include <stdio.h>
+#include <stdlib.h>
+
 class SQLConstants
 {
 public:
@@ -72,6 +75,11 @@ public:
         WHERE_STATEMENT_LT          = 504, // a < b
         WHERE_STATEMENT_LTE         = 505, // a <= b
         WHERE_STATEMENT_NE          = 506, // a != b
+
+        INDEX_STAT_FULL             = 601, // 完全匹配索引
+        INDEX_STAT_PART             = 602, // 部分匹配索引
+        INDEX_STAT_NONE             = 603, // 无法匹配索引
+
     };
     
     /*

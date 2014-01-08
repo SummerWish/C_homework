@@ -68,17 +68,19 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             
             // delete rows
             if (has_condition) {
-                for (auto it = table.rows.begin(); it != table.rows.end(); ) {
-                    if (condition.test((*it))) {
-                        it = table.rows.erase(it);
-                        affected_rows++;
-                    } else {
-                        it++;
-                    }
+
+                auto rows_to_delete = table.getTargetRowIterators(condition);
+
+                for (auto it = rows_to_delete.begin(); it != rows_to_delete.end(); ++it) {
+                    table.removeRow(*it);
+                    affected_rows++;
                 }
+
             } else {
+
                 affected_rows = (int)table.rows.size();
-                table.rows.clear();
+                table.removeAllRows();
+                
             }
             
             return *new SQLResultObject(timer.elapsed(), tableName, affected_rows);
@@ -150,14 +152,17 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             std::list<SQLTableRow> result;
             
             if (has_condition) {
-                for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                    auto &_row = *it;
-                    if (condition.test(_row)) {
-                        result.push_back(_row);
-                    }
+
+                auto rows_to_select = table.getTargetRowIterators(condition);
+
+                for (auto it = rows_to_select.begin(); it != rows_to_select.end(); ++it) {
+                    result.push_back(**it);
                 }
+
             } else {
+
                 result = std::list<SQLTableRow>(table.rows.begin(), table.rows.end());
+                
             }
             
             // begin sorting
@@ -246,41 +251,53 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             // begin updating
             // optimize: test condition outside loops
             int affected_rows = 0;
-            
+
             if (has_condition) {
+
+                // update specific index when doing selective update
+                
+                auto rows_to_update = table.getTargetRowIterators(condition);
+
+                // update value and index
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        auto &_row = *it;
-                        if (condition.test(_row)) {
-                            _row.cols[set_col]._v_f = set_col_v_f;
-                            (*result_table).rows.push_back(_row);
-                            affected_rows++;
-                        }
+                    for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
+                        table.updateRow(*it, set_col, set_col_v_f);
+                        (*result_table).rows.push_back(**it);
+                        affected_rows++;
                     }
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
-                        auto &_row = *it;
-                        if (condition.test(_row)) {
-                            _row.cols[set_col]._v_s = set_col_v_s;
-                            (*result_table).rows.push_back(_row);
-                            affected_rows++;
-                        }
+                    for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
+                        table.updateRow(*it, set_col, set_col_v_s);
+                        (*result_table).rows.push_back(**it);
+                        affected_rows++;
                     }
                 }
+
             } else {
+
+                // optimize: regenerate index when doing whole update
+
                 if (set_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
+
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_f = set_col_v_f;
-                        (*result_table).rows.push_back((*it));
+                        (*result_table).rows.push_back(*it);
                         affected_rows++;
                     }
+
+                    table.regenerateIndex(set_col, set_col_v_f);
+
                 } else if (set_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
+
                     for (auto it = table.rows.begin(); it != table.rows.end(); ++it) {
                         (*it).cols[set_col]._v_s = set_col_v_s;
-                        (*result_table).rows.push_back((*it));
+                        (*result_table).rows.push_back(*it);
                         affected_rows++;
                     }
+
+                    table.regenerateIndex(set_col, set_col_v_s);
                 }
+
             }
             
             return *new SQLResultObject(timer.elapsed(), tableName, result_table);

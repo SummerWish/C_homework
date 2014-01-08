@@ -13,6 +13,36 @@
 #include <vector>
 #include "SQLConstants.h"
 #include "SQLTableRow.h"
+#include "MyString.h"
+
+class SQLIndexStatObject
+{
+public:
+    bool can_optimize;
+    int row_index;
+    float _v_f;
+    MyString _v_s;
+
+    SQLIndexStatObject()
+    {
+        can_optimize = false;
+    }
+
+    SQLIndexStatObject(int row, float value)
+    {
+        can_optimize = true;
+        row_index = row;
+        _v_f = value;
+    }
+
+    SQLIndexStatObject(int row, const MyString& value)
+    {
+        can_optimize = true;
+        row_index = row;
+        _v_s = value;
+    }
+
+};
 
 class CompiledSQLConditionStatementObject
 {
@@ -89,6 +119,36 @@ private:
 public:
     std::vector<CompiledSQLConditionComponentObject> condition_components;
     
+    /*
+     判断该条件是否是一个可以被索引加速的条件，并返回可以被使用索引的列下标
+     如果无法被索引加速，则返回 -1
+
+     注：目前暂时只支持单条件索引优化
+     */
+    SQLIndexStatObject statIndex() const
+    {
+
+        if (condition_components.size() == 0) {
+            return SQLIndexStatObject();
+        }
+
+        for (auto it = condition_components.begin(); it != condition_components.end(); ++it) {
+            auto& component = *it;
+            if (component.type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
+                auto& statement = component.statement;
+                if (statement.op == SQLConstants::WHERE_STATEMENT_EQUAL) {
+                    if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
+                        return SQLIndexStatObject(statement.rowIndex, statement.value);
+                    } else {
+                        return SQLIndexStatObject(statement.rowIndex, statement.value.toFloat());
+                    }
+                }
+            }
+        }
+
+        return SQLIndexStatObject();
+    }
+
     /*
      给定数据行，计算该行是否满足条件
      */

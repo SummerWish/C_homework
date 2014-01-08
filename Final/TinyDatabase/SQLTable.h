@@ -18,6 +18,8 @@
 #include "MyString.h"
 #include "SQLTableHeader.h"
 #include "SQLTableRow.h"
+#include "SQLTableIndex.h"
+#include "SQLCondition.h"
 
 class SQLTable
 {
@@ -28,6 +30,10 @@ private:
 public:
     std::vector<SQLTableHeader> head;
     std::list<SQLTableRow> rows;
+
+    // for indexes
+    std::map<int, std::list<SQLTableRow>::iterator> _id2it;
+    std::vector<SQLTableIndex> indexes; //index by column
     
     SQLTable()
     {
@@ -40,6 +46,7 @@ public:
      */
     int getColumnIndexByName(const MyString& name) const
     {
+
         auto it = _headMapping.find(name.toUpper());
         
         if (it != _headMapping.end()) {
@@ -74,6 +81,7 @@ public:
         } else {
             _headMapping[column.name.toUpper()] = (int)head.size();
             head.push_back(column);
+            indexes.push_back(SQLTableIndex());
             return true;
         }
     }
@@ -84,6 +92,154 @@ public:
             return false;
         } else {
             return createColumn(SQLTableHeader(name, type));
+        }
+    }
+
+    /*
+     给定一个条件，返回一个包含了所有符合条件的行枚举器的列表
+     该函数会尝试使用索引
+     */
+    std::list<std::list<SQLTableRow>::iterator> getTargetRowIterators(CompiledSQLConditionObject& condition)
+    {
+        std::list<std::list<SQLTableRow>::iterator> desired_rows;
+
+        auto index_stat = condition.statIndex();
+
+        if (!index_stat.can_optimize) {
+            // no index can be used, enum all rows and test conditions
+            for (auto it = rows.begin(); it != rows.end(); ++it) {
+                if (condition.test(*it)) {
+                    desired_rows.push_back(it);
+                }
+            }
+        } else {
+            // can use index
+            if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                auto& idx = indexes[index_stat.row_index]._m_f;
+                for (auto it1 = idx.find(index_stat._v_f); it1 != idx.end(); ++it1) {
+                    auto it2 = _id2it.find((*it1).second);
+                    if (it2 == _id2it.end()) {
+                        // data has been removed
+                        idx.erase(it1);
+                    } else {
+                        // data exists, iterate in map
+                        auto& it = (*it2).second;
+                        if (condition.test(*it)) {
+                            desired_rows.push_back(it);
+                        }
+                    }
+                }
+            } else if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_CHAR) {
+                auto& idx = indexes[index_stat.row_index]._m_s;
+                for (auto it1 = idx.find(index_stat._v_s); it1 != idx.end(); ++it1) {
+                    auto it2 = _id2it.find((*it1).second);
+                    if (it2 == _id2it.end()) {
+                        // data has been removed
+                        idx.erase(it1);
+                    } else {
+                        // data exists, iterate in map
+                        auto& it = (*it2).second;
+                        if (condition.test(*it)) {
+                            desired_rows.push_back(it);
+                        }
+                    }
+                }
+            }
+        }
+
+        return desired_rows;
+    }
+
+    /*
+     删除一行，并删除索引入口（索引会在查询时被删除）
+     */
+    std::list<SQLTableRow>::iterator removeRow(std::list<SQLTableRow>::iterator& it)
+    {
+        auto& row = *it;
+
+        // dereference in index mapping
+        int _id = row._id;
+        _id2it.erase(_id2it.find(_id));
+
+        // remove row
+        return rows.erase(it);
+    }
+
+    /*
+     删除所有行，并删除所有索引
+     */
+    void removeAllRows()
+    {
+        _id2it.clear();
+        rows.clear();
+
+        for (auto it = indexes.begin(); it != indexes.end(); ++it) {
+            (*it)._m_f.clear();
+            (*it)._m_s.clear();
+        }
+    }
+
+    /*
+     更新行，并更新索引
+     */
+    void updateRow(std::list<SQLTableRow>::iterator& it, int column, float new_value)
+    {
+        auto& row = *it;
+        int _id = row._id;
+
+        // update value
+        float old_value = row.cols[column]._v_f;
+        row.cols[column]._v_f = new_value;
+
+        // update index
+        auto& index = indexes[column]._m_f;
+        for (auto it = index.find(old_value); it != index.end(); ++it) {
+            if ((*it).second == _id) {
+                index.erase(it);
+                break;
+            }
+        }
+    }
+
+    void updateRow(std::list<SQLTableRow>::iterator& it, int column, MyString& new_value)
+    {
+        auto& row = *it;
+        int _id = row._id;
+
+        // update value
+        MyString old_value = row.cols[column]._v_s;
+        row.cols[column]._v_s = new_value;
+
+        // update index
+        auto& index = indexes[column]._m_s;
+        for (auto it = index.find(old_value); it != index.end(); ++it) {
+            if ((*it).second == _id) {
+                index.erase(it);
+                break;
+            }
+        }
+    }
+
+    /*
+     重建一个列的索引为某个值
+     */
+    void regenerateIndex(int column, float new_value)
+    {
+        indexes[column]._m_f.clear();
+
+        for (auto it = rows.begin(); it != rows.end(); ++it) {
+            int _id = (*it)._id;
+            indexes[column]._m_f.insert(std::make_pair(new_value, _id));
+        }
+    }
+
+    void regenerateIndex(int column, MyString& new_value)
+    {
+        indexes[column]._m_s.clear();
+
+        for (auto it = rows.begin(); it != rows.end(); ++it) {
+            int _id = (*it)._id;
+            indexes[column]._m_s.insert(std::make_pair(new_value, _id));
         }
     }
     
@@ -155,30 +311,45 @@ public:
     {
         char tmp[4096];
         int affected_rows = 0;
+
+        int colSize = (int)head.size();
         
         while (s.getline(tmp, 4096)) {
             auto cols = my_split(tmp, (char*)",");
             
-            if (cols.size() > head.size()) {
+            if (cols.size() != head.size()) {
                 continue;
             }
             
-            // create row
             affected_rows++;
-            SQLTableRow row(increase_counter++, head.size());
+            
+            // create row
+            int _id = increase_counter++;
+            SQLTableRow row(_id, colSize);
             
             // insert other data
-            for (int i = 0; i < cols.size(); ++i) {
-                
+            for (int i = 0; i < colSize; ++i) {
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
                     row.cols.push_back(SQLTableCell(cols[i]));
                 } else {
                     row.cols.push_back(SQLTableCell(cols[i].toFloat()));
                 }
-                
             }
             
             rows.push_back(row);
+            
+            // reference to index collection
+            _id2it[_id] = rows.end();
+            --_id2it[_id];
+
+            // update index
+            for (int i = 0; i < colSize; ++i) {
+                if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
+                    indexes[i]._m_s.insert(std::make_pair(cols[i], _id));
+                } else {
+                    indexes[i]._m_f.insert(std::make_pair(cols[i].toFloat(), _id));
+                }
+            }
         }
         
         return affected_rows;
