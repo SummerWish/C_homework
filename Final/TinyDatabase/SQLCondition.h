@@ -19,6 +19,7 @@ class SQLIndexStatObject
 {
 public:
     bool can_optimize;
+    bool only_one;
     int row_index;
     float _v_f;
     MyString _v_s;
@@ -26,18 +27,21 @@ public:
     SQLIndexStatObject()
     {
         can_optimize = false;
+        only_one = false;
     }
 
-    SQLIndexStatObject(int row, float value)
+    SQLIndexStatObject(int row, bool one, float value)
     {
         can_optimize = true;
+        only_one = one;
         row_index = row;
         _v_f = value;
     }
 
-    SQLIndexStatObject(int row, const MyString& value)
+    SQLIndexStatObject(int row, bool one, const MyString& value)
     {
         can_optimize = true;
+        only_one = one;
         row_index = row;
         _v_s = value;
     }
@@ -131,22 +135,41 @@ public:
         if (condition_components.size() == 0) {
             return SQLIndexStatObject();
         }
+        
+        int res_count = 0;
+        int res_rowIndex;
+        int res_rowType;
+        float res_v_f;
+        MyString res_v_s;
 
         for (auto it = condition_components.begin(); it != condition_components.end(); ++it) {
             auto& component = *it;
             if (component.type == SQLConstants::WHERE_COMPONENT_STATEMENT) {
                 auto& statement = component.statement;
                 if (statement.op == SQLConstants::WHERE_STATEMENT_EQUAL) {
-                    if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
-                        return SQLIndexStatObject(statement.rowIndex, statement.value);
-                    } else {
-                        return SQLIndexStatObject(statement.rowIndex, statement.value.toFloat());
+                    res_count++;
+                    if (res_count == 1) {
+                        res_rowType = statement.rowType;
+                        res_rowIndex = statement.rowIndex;
+                        if (statement.rowType == SQLConstants::COLUMN_TYPE_CHAR) {
+                            res_v_s = statement.value;
+                        } else {
+                            res_v_f = statement.value.toFloat();
+                        }
                     }
                 }
             }
         }
-
-        return SQLIndexStatObject();
+        
+        if (res_count == 0) {
+            return SQLIndexStatObject();
+        } else {
+            if (res_rowType == SQLConstants::COLUMN_TYPE_CHAR) {
+                return SQLIndexStatObject(res_rowIndex, res_count == 1, res_v_s);
+            } else {
+                return SQLIndexStatObject(res_rowIndex, res_count == 1, res_v_f);
+            }
+        }
     }
 
     /*

@@ -115,23 +115,39 @@ public:
         } else {
             // can use index
             if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                
                 auto range = indexes[index_stat.row_index]._m_f.equal_range(index_stat._v_f);
                 
-                for (auto _it = range.first; _it != range.second; ++_it) {
-                    auto& it = _it->second;
-                    if (condition.test(*it)) {
-                        desired_rows.push_back(it);
+                if (index_stat.only_one) {
+                    for (auto _it = range.first; _it != range.second; ++_it) {
+                        desired_rows.push_back(_it->second);
+                    }
+                } else {
+                    for (auto _it = range.first; _it != range.second; ++_it) {
+                        auto& it = _it->second;
+                        if (condition.test(*it)) {
+                            desired_rows.push_back(it);
+                        }
                     }
                 }
+                
             } else if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_CHAR) {
+                
                 auto range = indexes[index_stat.row_index]._m_s.equal_range(index_stat._v_s);
                 
-                for (auto _it = range.first; _it != range.second; ++_it) {
-                    auto& it = _it->second;
-                    if (condition.test(*it)) {
-                        desired_rows.push_back(it);
+                if (index_stat.only_one) {
+                    for (auto _it = range.first; _it != range.second; ++_it) {
+                        desired_rows.push_back(_it->second);
+                    }
+                } else {
+                    for (auto _it = range.first; _it != range.second; ++_it) {
+                        auto& it = _it->second;
+                        if (condition.test(*it)) {
+                            desired_rows.push_back(it);
+                        }
                     }
                 }
+                
             }
         }
         
