@@ -102,7 +102,7 @@ public:
     std::list<std::list<SQLTableRow>::iterator> getTargetRowIterators(CompiledSQLConditionObject& condition)
     {
         std::list<std::list<SQLTableRow>::iterator> desired_rows;
-
+        
         auto index_stat = condition.statIndex();
 
         if (!index_stat.can_optimize) {
@@ -115,17 +115,19 @@ public:
         } else {
             // can use index
             if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                auto& idx = indexes[index_stat.row_index]._m_f;
-                for (auto _it = idx.find(index_stat._v_f); _it != idx.end(); ++_it) {
-                    auto& it = (*_it).second;
+                auto range = indexes[index_stat.row_index]._m_f.equal_range(index_stat._v_f);
+                
+                for (auto _it = range.first; _it != range.second; ++_it) {
+                    auto& it = _it->second;
                     if (condition.test(*it)) {
                         desired_rows.push_back(it);
                     }
                 }
             } else if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_CHAR) {
-                auto& idx = indexes[index_stat.row_index]._m_s;
-                for (auto _it = idx.find(index_stat._v_s); _it != idx.end(); ++_it) {
-                    auto& it = (*_it).second;
+                auto range = indexes[index_stat.row_index]._m_s.equal_range(index_stat._v_s);
+                
+                for (auto _it = range.first; _it != range.second; ++_it) {
+                    auto& it = _it->second;
                     if (condition.test(*it)) {
                         desired_rows.push_back(it);
                     }
@@ -151,9 +153,10 @@ public:
             if (type == SQLConstants::COLUMN_TYPE_FLOAT) {
                 
                 auto& idx = indexes[i]._m_f;
+                auto range = idx.equal_range(row.cols[i]._v_f);
                 
-                for (auto _it = idx.find(row.cols[i]._v_f); _it != idx.end(); ++_it) {
-                    if ((*_it).second == it) {
+                for (auto _it = range.first; _it != range.second; ++_it) {
+                    if (_it->second == it) {
                         idx.erase(_it);
                         break;
                     }
@@ -162,13 +165,15 @@ public:
             } else if (type == SQLConstants::COLUMN_TYPE_CHAR) {
                 
                 auto& idx = indexes[i]._m_s;
+                auto range = idx.equal_range(row.cols[i]._v_s);
                 
-                for (auto _it = idx.find(row.cols[i]._v_s); _it != idx.end(); ++_it) {
-                    if ((*_it).second == it) {
+                for (auto _it = range.first; _it != range.second; ++_it) {
+                    if (_it->second == it) {
                         idx.erase(_it);
                         break;
                     }
                 }
+
                 
             }
             
@@ -186,8 +191,8 @@ public:
         rows.clear();
 
         for (auto it = indexes.begin(); it != indexes.end(); ++it) {
-            (*it)._m_f.clear();
-            (*it)._m_s.clear();
+            it->_m_f.clear();
+            it->_m_s.clear();
         }
     }
 
@@ -203,10 +208,12 @@ public:
         row.cols[column]._v_f = new_value;
 
         // update index
-        auto& index = indexes[column]._m_f;
-        for (auto it = index.find(old_value); it != index.end(); ++it) {
-            if ((*it).second == _it) {
-                index.erase(it);
+        auto& idx = indexes[column]._m_f;
+        auto range = idx.equal_range(old_value);
+        
+        for (auto it = range.first; it != range.second; ++it) {
+            if (it->second == _it) {
+                idx.erase(it);
                 break;
             }
         }
@@ -221,10 +228,12 @@ public:
         row.cols[column]._v_s = new_value;
 
         // update index
-        auto& index = indexes[column]._m_s;
-        for (auto it = index.find(old_value); it != index.end(); ++it) {
-            if ((*it).second == _it) {
-                index.erase(it);
+        auto& idx = indexes[column]._m_s;
+        auto range = idx.equal_range(old_value);
+        
+        for (auto it = range.first; it != range.second; ++it) {
+            if (it->second == _it) {
+                idx.erase(it);
                 break;
             }
         }
