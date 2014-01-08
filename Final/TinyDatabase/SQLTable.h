@@ -32,7 +32,7 @@ public:
     std::list<SQLTableRow> rows;
 
     // for indexes
-    std::map<int, std::list<SQLTableRow>::iterator> _id2it;
+    //std::map<int, std::list<SQLTableRow>::iterator> _id2it;
     std::vector<SQLTableIndex> indexes; //index by column
     
     SQLTable()
@@ -116,51 +116,64 @@ public:
             // can use index
             if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_FLOAT) {
                 auto& idx = indexes[index_stat.row_index]._m_f;
-                for (auto it1 = idx.find(index_stat._v_f); it1 != idx.end(); ++it1) {
-                    auto it2 = _id2it.find((*it1).second);
-                    if (it2 == _id2it.end()) {
-                        // data has been removed
-                        idx.erase(it1);
-                    } else {
-                        // data exists, iterate in map
-                        auto& it = (*it2).second;
-                        if (condition.test(*it)) {
-                            desired_rows.push_back(it);
-                        }
+                for (auto _it = idx.find(index_stat._v_f); _it != idx.end(); ++_it) {
+                    auto& it = (*_it).second;
+                    if (condition.test(*it)) {
+                        desired_rows.push_back(it);
                     }
                 }
             } else if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_CHAR) {
                 auto& idx = indexes[index_stat.row_index]._m_s;
-                for (auto it1 = idx.find(index_stat._v_s); it1 != idx.end(); ++it1) {
-                    auto it2 = _id2it.find((*it1).second);
-                    if (it2 == _id2it.end()) {
-                        // data has been removed
-                        idx.erase(it1);
-                    } else {
-                        // data exists, iterate in map
-                        auto& it = (*it2).second;
-                        if (condition.test(*it)) {
-                            desired_rows.push_back(it);
-                        }
+                for (auto _it = idx.find(index_stat._v_s); _it != idx.end(); ++_it) {
+                    auto& it = (*_it).second;
+                    if (condition.test(*it)) {
+                        desired_rows.push_back(it);
                     }
                 }
             }
         }
-
+        
         return desired_rows;
     }
 
     /*
-     删除一行，并删除索引入口（索引会在查询时被删除）
+     删除一行，同时删除索引
      */
     std::list<SQLTableRow>::iterator removeRow(std::list<SQLTableRow>::iterator& it)
     {
         auto& row = *it;
-
-        // dereference in index mapping
-        int _id = row._id;
-        _id2it.erase(_id2it.find(_id));
-
+        
+        // remove index
+        for (int i = 0; i < head.size(); ++i) {
+        
+            int& type = head[i].type;
+            
+            if (type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                
+                auto& idx = indexes[i]._m_f;
+                
+                for (auto _it = idx.find(row.cols[i]._v_f); _it != idx.end(); ++_it) {
+                    if ((*_it).second == it) {
+                        idx.erase(_it);
+                        break;
+                    }
+                }
+                
+            } else if (type == SQLConstants::COLUMN_TYPE_CHAR) {
+                
+                auto& idx = indexes[i]._m_s;
+                
+                for (auto _it = idx.find(row.cols[i]._v_s); _it != idx.end(); ++_it) {
+                    if ((*_it).second == it) {
+                        idx.erase(_it);
+                        break;
+                    }
+                }
+                
+            }
+            
+        }
+        
         // remove row
         return rows.erase(it);
     }
@@ -170,7 +183,6 @@ public:
      */
     void removeAllRows()
     {
-        _id2it.clear();
         rows.clear();
 
         for (auto it = indexes.begin(); it != indexes.end(); ++it) {
@@ -182,11 +194,10 @@ public:
     /*
      更新行，并更新索引
      */
-    void updateRow(std::list<SQLTableRow>::iterator& it, int column, float new_value)
+    void updateRow(std::list<SQLTableRow>::iterator& _it, int column, float new_value)
     {
-        auto& row = *it;
-        int _id = row._id;
-
+        auto& row = *_it;
+        
         // update value
         float old_value = row.cols[column]._v_f;
         row.cols[column]._v_f = new_value;
@@ -194,17 +205,16 @@ public:
         // update index
         auto& index = indexes[column]._m_f;
         for (auto it = index.find(old_value); it != index.end(); ++it) {
-            if ((*it).second == _id) {
+            if ((*it).second == _it) {
                 index.erase(it);
                 break;
             }
         }
     }
 
-    void updateRow(std::list<SQLTableRow>::iterator& it, int column, MyString& new_value)
+    void updateRow(std::list<SQLTableRow>::iterator& _it, int column, MyString& new_value)
     {
-        auto& row = *it;
-        int _id = row._id;
+        auto& row = *_it;
 
         // update value
         MyString old_value = row.cols[column]._v_s;
@@ -213,7 +223,7 @@ public:
         // update index
         auto& index = indexes[column]._m_s;
         for (auto it = index.find(old_value); it != index.end(); ++it) {
-            if ((*it).second == _id) {
+            if ((*it).second == _it) {
                 index.erase(it);
                 break;
             }
@@ -228,8 +238,7 @@ public:
         indexes[column]._m_f.clear();
 
         for (auto it = rows.begin(); it != rows.end(); ++it) {
-            int _id = (*it)._id;
-            indexes[column]._m_f.insert(std::make_pair(new_value, _id));
+            indexes[column]._m_f.insert(std::make_pair(new_value, it));
         }
     }
 
@@ -238,8 +247,7 @@ public:
         indexes[column]._m_s.clear();
 
         for (auto it = rows.begin(); it != rows.end(); ++it) {
-            int _id = (*it)._id;
-            indexes[column]._m_s.insert(std::make_pair(new_value, _id));
+            indexes[column]._m_s.insert(std::make_pair(new_value, it));
         }
     }
     
@@ -339,15 +347,15 @@ public:
             rows.push_back(row);
             
             // reference to index collection
-            _id2it[_id] = rows.end();
-            --_id2it[_id];
-
+            auto it = rows.end();
+            it--;
+            
             // update index
             for (int i = 0; i < colSize; ++i) {
                 if (head[i].type == SQLConstants::COLUMN_TYPE_CHAR) {
-                    indexes[i]._m_s.insert(std::make_pair(cols[i], _id));
+                    indexes[i]._m_s.insert(std::make_pair(cols[i], it));
                 } else {
-                    indexes[i]._m_f.insert(std::make_pair(cols[i].toFloat(), _id));
+                    indexes[i]._m_f.insert(std::make_pair(cols[i].toFloat(), it));
                 }
             }
         }

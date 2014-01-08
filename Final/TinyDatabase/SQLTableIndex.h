@@ -10,13 +10,15 @@
 #define _352978_SQLTableIndex_h
 
 #include <map>
+#include <list>
 #include "MyString.h"
+#include "SQLTableRow.h"
 
 class SQLTableIndex
 {
 public:
-    std::multimap<float, int> _m_f;
-    std::multimap<MyString, int> _m_s;
+    std::multimap<float, std::list<SQLTableRow>::iterator> _m_f;
+    std::multimap<MyString, std::list<SQLTableRow>::iterator> _m_s;
 
     SQLTableIndex()
     {
