@@ -157,6 +157,8 @@ public:
                             res_v_f = statement.value.toFloat();
                         }
                     }
+                } else {
+                    return SQLIndexStatObject();
                 }
             }
         }

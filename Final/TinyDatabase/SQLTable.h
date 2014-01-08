@@ -95,25 +95,82 @@ public:
         }
     }
 
+    void sort(std::list<SQLTableRow>& result, int order_col, int order)
+    {
+        
+    }
+    
     /*
      给定一个条件，返回一个包含了所有符合条件的行枚举器的列表
      该函数会尝试使用索引
+     
+     如果给定了排序主键，则会对结果进行排序
+     注，在可以被索引优化情况下，不会对结果进行排序
      */
     std::list<std::list<SQLTableRow>::iterator> getTargetRowIterators(CompiledSQLConditionObject& condition)
+    {
+        return getTargetRowIterators(condition, -1, -1);
+    }
+    
+    std::list<std::list<SQLTableRow>::iterator> getTargetRowIterators(CompiledSQLConditionObject& condition, int order_col, int order)
     {
         std::list<std::list<SQLTableRow>::iterator> desired_rows;
         
         auto index_stat = condition.statIndex();
 
         if (!index_stat.can_optimize) {
-            // no index can be used, enum all rows and test conditions
-            for (auto it = rows.begin(); it != rows.end(); ++it) {
-                if (condition.test(*it)) {
-                    desired_rows.push_back(it);
+            
+            if (order_col == -1) {
+                // no index can be used, enum all rows and test conditions
+                for (auto it = rows.begin(); it != rows.end(); ++it) {
+                    if (condition.test(*it)) {
+                        desired_rows.push_back(it);
+                    }
+                }
+            } else {
+                // order optimize
+                if (order == SQLConstants::ORDER_ASC) {
+                    //asc
+                    if (head[order_col].type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                        auto& idx = indexes[order_col]._m_f;
+                        for (auto it = idx.begin(); it != idx.end(); ++it) {
+                            if (condition.test(*it->second)) {
+                                desired_rows.push_back(it->second);
+                            }
+                        }
+                    } else {
+                        auto& idx = indexes[order_col]._m_s;
+                        for (auto it = idx.begin(); it != idx.end(); ++it) {
+                            if (condition.test(*it->second)) {
+                                desired_rows.push_back(it->second);
+                            }
+                        }
+                    }
+                } else {
+                    //desc
+                    if (head[order_col].type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                        auto& idx = indexes[order_col]._m_f;
+                        for (auto it = idx.begin(); it != idx.end(); ++it) {
+                            if (condition.test(*it->second)) {
+                                desired_rows.push_front(it->second);
+                            }
+                        }
+                    } else {
+                        auto& idx = indexes[order_col]._m_s;
+                        for (auto it = idx.begin(); it != idx.end(); ++it) {
+                            if (condition.test(*it->second)) {
+                                desired_rows.push_front(it->second);
+                            }
+                        }
+                    }
                 }
             }
+            
         } else {
+            
             // can use index
+            // 注意：在这种情况下 不提供排序
+            
             if (head[index_stat.row_index].type == SQLConstants::COLUMN_TYPE_FLOAT) {
                 
                 auto range = indexes[index_stat.row_index]._m_f.equal_range(index_stat._v_f);
@@ -149,6 +206,7 @@ public:
                 }
                 
             }
+
         }
         
         return desired_rows;

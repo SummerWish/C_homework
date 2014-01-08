@@ -153,47 +153,65 @@ SQLResultObject& SQLExecuter::execute(SQLStorage& _storage, const SQLQueryObject
             
             if (has_condition) {
 
-                auto rows_to_select = table.getTargetRowIterators(condition);
+                auto rows_to_select = table.getTargetRowIterators(condition, order_col, order_order);
 
                 for (auto it = rows_to_select.begin(); it != rows_to_select.end(); ++it) {
                     result.push_back(**it);
                 }
-
-            } else {
-
-                result = std::list<SQLTableRow>(table.rows.begin(), table.rows.end());
                 
-            }
-            
-            // begin sorting
-            if (order_col > -1) {
-                if (order_order == SQLConstants::ORDER_ASC) {
-                    if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
-                        {
-                            return (r1.cols[order_col]._v_f < r2.cols[order_col]._v_f);
-                        });
-                    } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
-                        {
-                            return (r1.cols[order_col]._v_s < r2.cols[order_col]._v_s);
-                        });
-                    }
-                } else if (order_order == SQLConstants::ORDER_DESC) {
-                    if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
-                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
-                        {
-                            return (r1.cols[order_col]._v_f > r2.cols[order_col]._v_f);
-                        });
-                    } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
-                        result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
-                        {
-                            return (r1.cols[order_col]._v_s > r2.cols[order_col]._v_s);
-                        });
+                auto index_stat = condition.statIndex();
+                
+                if (index_stat.can_optimize) {
+                    //这种情况下没有排序，因此重新排序
+                    // begin sorting
+                    if (order_col > -1) {
+                        if (order_order == SQLConstants::ORDER_ASC) {
+                            if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                                result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                                            {
+                                                return (r1.cols[order_col]._v_f < r2.cols[order_col]._v_f);
+                                            });
+                            } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
+                                result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                                            {
+                                                return (r1.cols[order_col]._v_s < r2.cols[order_col]._v_s);
+                                            });
+                            }
+                        } else if (order_order == SQLConstants::ORDER_DESC) {
+                            if (order_col_type == SQLConstants::COLUMN_TYPE_FLOAT) {
+                                result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                                            {
+                                                return (r1.cols[order_col]._v_f > r2.cols[order_col]._v_f);
+                                            });
+                            } else if (order_col_type == SQLConstants::COLUMN_TYPE_CHAR) {
+                                result.sort([order_col](const SQLTableRow& r1, const SQLTableRow& r2) -> bool
+                                            {
+                                                return (r1.cols[order_col]._v_s > r2.cols[order_col]._v_s);
+                                            });
+                            }
+                        }
                     }
                 }
+                
+            } else {
+
+                if (order_col == -1) {
+                    
+                    result = std::list<SQLTableRow>(table.rows.begin(), table.rows.end());
+                    
+                } else {
+                    
+                    //如果没有WHERE，则直接使用排序索引
+                    auto rows_to_select = table.getTargetRowIterators(condition, order_col, order_order);
+                    
+                    for (auto it = rows_to_select.begin(); it != rows_to_select.end(); ++it) {
+                        result.push_back(**it);
+                    }
+
+                }
+                
             }
-            
+
             // filter and top, push data
             for (auto it = result.begin(); it != result.end(); ++it) {
                 result_table->rows.push_back(filter.filter(*it));
