@@ -94,11 +94,6 @@ public:
             return createColumn(SQLTableHeader(name, type));
         }
     }
-
-    void sort(std::list<SQLTableRow>& result, int order_col, int order)
-    {
-        
-    }
     
     /*
      给定一个条件，返回一个包含了所有符合条件的行枚举器的列表
@@ -285,12 +280,16 @@ public:
         auto& idx = indexes[column]._m_f;
         auto range = idx.equal_range(old_value);
         
+        // remove old index
         for (auto it = range.first; it != range.second; ++it) {
             if (it->second == _it) {
                 idx.erase(it);
                 break;
             }
         }
+        
+        // insert new index
+        idx.insert(std::make_pair(new_value, _it));
     }
 
     void updateRow(std::list<SQLTableRow>::iterator& _it, int column, MyString& new_value)
@@ -305,12 +304,16 @@ public:
         auto& idx = indexes[column]._m_s;
         auto range = idx.equal_range(old_value);
         
+        // remove old index
         for (auto it = range.first; it != range.second; ++it) {
             if (it->second == _it) {
                 idx.erase(it);
                 break;
             }
         }
+        
+        // insert new index
+        idx.insert(std::make_pair(new_value, _it));
     }
 
     /*
