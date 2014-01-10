@@ -400,18 +400,20 @@ public:
     
     /*
      从流中导入数据
+     单行最大不超过100KB
      */
     int import(std::istream& s)
     {
-        char tmp[4096];
-        int affected_rows = 0;
+        char *tmp = new char[102400];
+        int affected_rows = 0, ignored_rows = 0;
 
         int colSize = (int)head.size();
         
-        while (s.getline(tmp, 4096)) {
+        while (s.getline(tmp, 102400)) {
             auto cols = my_split(tmp, (char*)",");
             
             if (cols.size() != head.size()) {
+                ignored_rows++;
                 continue;
             }
             
@@ -444,6 +446,10 @@ public:
                     indexes[i]._m_f.insert(std::make_pair(cols[i].toFloat(), it));
                 }
             }
+        }
+        
+        if (ignored_rows > 0) {
+            std::cout << "[Warning] Ignored " << ignored_rows << " rows." << std::endl;
         }
         
         return affected_rows;

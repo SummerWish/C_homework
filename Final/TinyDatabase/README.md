@@ -389,7 +389,7 @@ To enter interactive mode, input `it`.
 
 To exit interactive mode, input `exit`.
 
-```java
+```
 Breezewish's Tiny SQL Database
 Version: 0.0.1.20140103.183700
 -h

@@ -54,7 +54,7 @@ int database_handler_interactive_mode(const std::vector<MyString>& params)
                 auto result = sql.execute(line);
                 
                 std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-                std::cout << "Affected " << result.n << " rows." << std::endl;
+                std::cout << "Involved " << result.n << " rows." << std::endl;
                 if (result.table != nullptr && result.table->rows.size() > 0) {
                     result.print(std::cout);
                 }
@@ -195,7 +195,7 @@ int database_handler_delete(const std::vector<MyString>& params)
         auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("delete_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-        std::cout << "Affected " << result.n << " rows." << std::endl;
+        std::cout << "Deleted " << result.n << " rows." << std::endl;
         std::cout << "Table data outputed to: " << output << std::endl;
         sql.xport(result.tableName, output);
         
