@@ -54,7 +54,7 @@ int database_handler_interactive_mode(const std::vector<MyString>& params)
                 auto result = sql.execute(line);
                 
                 std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-                std::cout << "Involved " << result.n << " rows." << std::endl;
+                std::cout << "Involved " << result.n << " rows (scanned " << result.scanned << " rows)." << std::endl;
                 if (result.table != nullptr && result.table->rows.size() > 0) {
                     result.print(std::cout);
                 }
@@ -137,7 +137,7 @@ int database_handler_select(const std::vector<MyString>& params)
         auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("select_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-        std::cout << "Selected " << result.n << " rows." << std::endl;
+        std::cout << "Selected " << result.n << " rows (scanned " << result.scanned << " rows)." << std::endl;
         std::cout << "Data outputed to: " << output << std::endl;
         result.xport(output);
         
@@ -166,7 +166,7 @@ int database_handler_update(const std::vector<MyString>& params)
         auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("update_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-        std::cout << "Updated " << result.n << " rows." << std::endl;
+        std::cout << "Updated " << result.n << " rows (scanned " << result.scanned << " rows)." << std::endl;
         std::cout << "Data outputed to: " << output << std::endl;
         result.xport(output);
         
@@ -195,9 +195,9 @@ int database_handler_delete(const std::vector<MyString>& params)
         auto result = sql.execute(read(params[0]));
         MyString output = MyString(OUTPUT_PREFIX).concat("delete_").concat(MyString(execute_n++)).concat(".txt");
         std::cout << "Completed without errors in " << result.execute_time << "ms." << std::endl;
-        std::cout << "Deleted " << result.n << " rows." << std::endl;
+        std::cout << "Deleted " << result.n << " rows (scanned " << result.scanned << " rows)." << std::endl;
         std::cout << "Table data outputed to: " << output << std::endl;
-        sql.xport(result.tableName, output);
+        sql.xport(result.table->name, output);
         
         return MyConsole::STATUS_OK;
         

@@ -41,7 +41,7 @@ SQLResultObject& SQL::import(const MyString& table, const char *filepath)
     
     int n = _storage[table_].import(filepath);
     
-    return *new SQLResultObject(timer.elapsed(), table_, n);
+    return *new SQLResultObject(timer.elapsed(), n, 0);
 }
 
 /*
@@ -64,7 +64,7 @@ SQLResultObject& SQL::xport(const MyString& table, const MyString& filepath)
     
     int n = _storage[table_].xport(filepath);
     
-    return *new SQLResultObject(timer.elapsed(), table_, n);
+    return *new SQLResultObject(timer.elapsed(), n, 0);
 }
 
 SQLResultObject& SQL::xport(const MyString& table, const char *filepath)
@@ -79,5 +79,5 @@ SQLResultObject& SQL::xport(const MyString& table, const char *filepath)
     
     int n = _storage[table_].xport(filepath);
     
-    return *new SQLResultObject(timer.elapsed(), table_, n);
+    return *new SQLResultObject(timer.elapsed(), n, 0);
 }

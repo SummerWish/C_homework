@@ -18,28 +18,56 @@
 #include "SQLConstants.h"
 #include "SQLTable.h"
 
-class SQLResultObject
+class SQLSelectResultObject
 {
 public:
     int n;
     long execute_time;
-    MyString tableName;
+    std::list<std::list<SQLTableRow>::iterator> *desired_rows;
+    
+    SQLSelectResultObject(long time)
+    {
+        n = 0;
+        execute_time = time;
+    }
+    
+    SQLSelectResultObject(long time, int scanned_objects, std::list<std::list<SQLTableRow>::iterator> *rows)
+    {
+        n = scanned_objects;
+        execute_time = time;
+        desired_rows = rows;
+    }
+    
+    ~SQLSelectResultObject()
+    {
+        if (desired_rows != nullptr) {
+            delete desired_rows;
+        }
+    }
+};
+
+class SQLResultObject
+{
+public:
+    int n;
+    int scanned;
+    long execute_time;
     const SQLTable *table;
     
     /*
      空结果构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table);
+    SQLResultObject(long time);
     
     /*
      无返回构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table, int affected_rows);
+    SQLResultObject(long time, int affected_rows, int scanned_rows);
     
     /*
      返回结果集的构造函数
      */
-    SQLResultObject(long time, const MyString& affect_table, const SQLTable *records);
+    SQLResultObject(long time, const SQLTable *records, int scanned_rows);
     
     /*
      析构函数

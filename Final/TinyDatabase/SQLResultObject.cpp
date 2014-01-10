@@ -8,31 +8,27 @@
 
 #include "SQLResultObject.h"
 
-SQLResultObject::SQLResultObject(long time,
-                                 const MyString& affect_table)
+SQLResultObject::SQLResultObject(long time)
 {
     table = nullptr;
-    tableName = affect_table;
     execute_time = time;
 }
 
-SQLResultObject::SQLResultObject(long time,
-                                 const MyString& affect_table, int affected_rows)
+SQLResultObject::SQLResultObject(long time, int affected_rows, int scanned_rows)
 {
     table = nullptr;
-    tableName = affect_table;
     execute_time = time;
     n = affected_rows;
+    scanned = scanned_rows;
 }
 
-SQLResultObject::SQLResultObject(long time,
-                                 const MyString& affect_table, const SQLTable *records)
+SQLResultObject::SQLResultObject(long time, const SQLTable *records, int scanned_rows)
 {
-    tableName = affect_table;
     execute_time = time;
     
     table = records;
     n = (int)records->rows.size();
+    scanned = scanned_rows;
 }
 
 SQLResultObject::~SQLResultObject()
